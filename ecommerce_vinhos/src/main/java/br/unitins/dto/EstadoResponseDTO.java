@@ -1,0 +1,11 @@
+package br.unitins.dto;
+
+import br.unitins.model.Estado;
+
+public record EstadoResponseDTO(
+    String nome,
+    String sigla) {
+        public EstadoResponseDTO(Estado estado) {
+            this(estado.getNome(), estado.getSigla()); 
+        }
+}

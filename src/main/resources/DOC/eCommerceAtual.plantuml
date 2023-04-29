@@ -1,0 +1,120 @@
+@startuml ecommerc
+title Diagrama de Classe E-Commerce
+Class Compra{
+    - id: long
+    - data: LocalDate
+    - totalCompra: Double
+}
+
+Class Pagamento{
+    - id: long
+    - valorTotal: Double
+    - quantParcela: int
+    - valorParcela: int
+    - descricao: String
+}
+
+enum StatusPagamento{
+    - PENDENTE: int
+    - PAGO: int
+    - CANCELADO: int
+}
+
+Class Endereco{
+    - id: long
+    - numero: String
+    - rua: String
+    - bairro: String
+    - cep: String
+    - complemento: String
+}
+
+Class Cidade{
+    - id: long
+    - nome: String
+}
+
+Class Estado{
+    - id: long
+    - nome: String
+    - sigla: String
+}
+
+Class Usuario{
+    - id: long
+    - nome: String
+    - cpf: String
+    - senha: String
+    - email: String
+}
+
+Class Produto{
+    - id: long
+    - nome: String
+    - estoque: int
+    - preco: Double
+}
+Class Vinho{
+    - id: long
+    - teorAlcoólico: String
+    - tipoUva: String
+    - ano: float
+    - descricao: String
+}
+
+Class Produtor{
+    - id: long
+    - nome: String
+    - país: String
+}
+
+enum TipoVinho{
+    - TINTO: int
+    - BRANCO: int
+    - ROSE: int
+    - ESPUMANTE: int
+    - LICOROSO: int
+}
+
+enum TipoPagamento{
+    - BOLETO: int
+    - PIX: int
+    - CREDITO: int
+    - DEBITO: int
+}
+
+Class ItemCompra{
+    - id: long
+    - quantidade: int
+    - precoUnitario: float
+}
+
+Class Telefone{
+    - id: long
+    - codigoArea: String
+    - numero: String
+}
+
+
+Compra "*"  --> "1" Endereco
+Compra "*" --> "1" Pagamento
+Compra  "*" --> "1" Usuario
+Compra "1"  *--> "*" ItemCompra
+ItemCompra "*" --> "1" Produto
+
+Endereco "*"  --> "1" Cidade
+Cidade "*"  --> "1" Estado
+
+Usuario "1"  *--> "*" Endereco
+Usuario "1" *--> "1" Telefone
+Usuario "*" --> "*" Produto: listaDesejos
+
+Vinho --|> Produto
+Vinho "*" --> "1" Produtor
+Vinho "*" --> "1" TipoVinho
+
+Pagamento "*" --> "1" StatusPagamento
+Pagamento "*" --> "1" TipoPagamento
+
+
+@enduml
