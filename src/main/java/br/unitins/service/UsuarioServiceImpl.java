@@ -1,16 +1,17 @@
 package br.unitins.service;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import javax.enterprise.context.ApplicationScoped;
-import javax.inject.Inject;
-import javax.transaction.Transactional;
-import javax.validation.ConstraintViolation;
-import javax.validation.ConstraintViolationException;
-import javax.validation.Validator;
-import javax.ws.rs.NotFoundException;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.ConstraintViolationException;
+import jakarta.validation.Validator;
+import jakarta.ws.rs.NotFoundException;
 
 import br.unitins.dto.UsuarioDTO;
 import br.unitins.dto.UsuarioResponseDTO;
@@ -23,7 +24,7 @@ import br.unitins.repository.UsuarioRepository;
 import br.unitins.repository.VinhoRepository;
 
 @ApplicationScoped
-public class UsuarioServiceImpl implements UsuarioService{
+public class UsuarioServiceImpl implements UsuarioService {
     @Inject
     UsuarioRepository usuarioRepository;
 
@@ -36,81 +37,28 @@ public class UsuarioServiceImpl implements UsuarioService{
     @Inject
     VinhoRepository vinhoRepository;
 
-    
     @Inject
     Validator validator;
 
     @Override
     public List<UsuarioResponseDTO> getAll() {
         List<Usuario> list = usuarioRepository.listAll();
-        return list.stream().map(UsuarioResponseDTO::new).collect(Collectors.toList());
+        return list.stream().map(u -> UsuarioResponseDTO.valueOf(u)).collect(Collectors.toList());
     }
 
     @Override
     public UsuarioResponseDTO findById(Long id) {
-        Usuario pessoafisica = usuarioRepository.findById(id);
-        if (pessoafisica == null)
+        Usuario usuario = usuarioRepository.findById(id);
+        if (usuario == null)
             throw new NotFoundException("Usuario não encontrado!");
-        return new UsuarioResponseDTO(pessoafisica);
-    }
-
-    @Override
-    @Transactional
-    public UsuarioResponseDTO insert(UsuarioDTO usuarioDTO) throws ConstraintViolationException {
-        validar(usuarioDTO);
-
-        Usuario entity = new Usuario();
-        entity.setNome(usuarioDTO.nome());
-        entity.setCpf(usuarioDTO.cpf());
-        entity.setEmail(usuarioDTO.email());
-        entity.setSenha(usuarioDTO.senha());
-
-        entity.setTelefone(telefoneRepository.findById(usuarioDTO.telefone().longValue()));
-        
-        List<Endereco> end = new ArrayList<Endereco>();
-        end.add(enderecoRepository.findById(usuarioDTO.endereco()));
-        entity.setEnderecos(end);
-
-        List<Vinho> vinhos = new ArrayList<Vinho>();
-        vinhos.add(vinhoRepository.findByID(usuarioDTO.vinhosListaDesejos().intValue()));
-        entity.setVinhosListaDesejos(vinhos); 
-
-        usuarioRepository.persist(entity);
-
-    
-        return new UsuarioResponseDTO(entity);
-    }
-
-    @Override
-    @Transactional
-    public UsuarioResponseDTO update(Long id, UsuarioDTO usuarioDTO) throws ConstraintViolationException{
-        validar(usuarioDTO);
-   
-        Usuario entity = usuarioRepository.findById(id);
-        validarId(entity);
-        entity.setNome(usuarioDTO.nome());
-        entity.setCpf(usuarioDTO.cpf());
-        entity.setEmail(usuarioDTO.email());
-        entity.setSenha(usuarioDTO.senha());
-        entity.setTelefone(telefoneRepository.findById(usuarioDTO.telefone().longValue()));
-
-        List<Endereco> end = new ArrayList<Endereco>();
-        end.add(enderecoRepository.findById(usuarioDTO.endereco()));
-        entity.setEnderecos(end);
-
-        return new UsuarioResponseDTO(entity);
-    }
-
-    private void validar(UsuarioDTO usuarioDTO) throws ConstraintViolationException {
-        Set<ConstraintViolation<UsuarioDTO>> violations = validator.validate(usuarioDTO);
-        if (!violations.isEmpty())
-            throw new ConstraintViolationException(violations);
+        return UsuarioResponseDTO.valueOf(usuario);
     }
 
     private void validarId(Usuario vinho) throws ConstraintViolationException {
         if (vinho.getId() == null)
             throw new NullPointerException("Id inválido");
     }
+
     @Override
     @Transactional
     public void delete(Long id) {
@@ -121,7 +69,18 @@ public class UsuarioServiceImpl implements UsuarioService{
     @Override
     public List<UsuarioResponseDTO> findByCpf(String cpf) {
         List<Usuario> list = usuarioRepository.findByCpf(cpf);
-        return list.stream().map(UsuarioResponseDTO::new).collect(Collectors.toList());
+        return list.stream().map(u -> UsuarioResponseDTO.valueOf(u)).collect(Collectors.toList());
+    }
+
+    public Usuario findByLoginAndSenha(String email, String senha) {
+        return usuarioRepository.findByLoginAndSenha(email, senha);
+    }
+
+    public UsuarioResponseDTO findByLogin(String email) {
+        Usuario usuario = usuarioRepository.findByLogin(email);
+        if (usuario == null)
+            throw new NotFoundException("Usuário não encontrado.");
+        return UsuarioResponseDTO.valueOf(usuario);
     }
 
     @Override

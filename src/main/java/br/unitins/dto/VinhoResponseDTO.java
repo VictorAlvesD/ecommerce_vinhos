@@ -5,18 +5,38 @@ import br.unitins.model.TipoVinho;
 import br.unitins.model.Vinho;
 
 public record VinhoResponseDTO (
-    Long id,
-     String nome,
-     int estoque,
-     Double preco,
-     String teorAlcoolico,
-     String tipoUva,
-     TipoVinho tipoVinho,
-     Produtor produtor
-){
-    public VinhoResponseDTO(Vinho vinho) {
-        this(vinho.getId(), vinho.getNome(), vinho.getEstoque(), vinho.getPreco(), vinho.getTeorAlcoolico(), vinho.getTipoUva(), vinho.getTipoVinho(), vinho.getProdutor());
+    String nome,
+    Double preco,
+    String teorAlcoolico,
+    String tipoUva,
+    TipoVinho tipoVinho
+) {
+    public VinhoResponseDTO (Vinho vinho) {
+        this(
+        vinho.getNome(),
+        vinho.getPreco(),
+        vinho.getTeorAlcoolico(),
+        vinho.getTipoUva(),
+        vinho.getTipoVinho()
+    );
     }
 
-    
+    public static VinhoResponseDTO valueOf(Vinho vinho) {
+        if (vinho == null)
+            return null;
+
+
+        return new VinhoResponseDTO(
+            vinho.getNome(),
+            vinho.getPreco(),
+            vinho.getTeorAlcoolico(),
+            vinho.getTipoUva(),
+            vinho.getTipoVinho()
+        );
+    }
+
+    public Object id() {
+        return null;
+    }
 }
+

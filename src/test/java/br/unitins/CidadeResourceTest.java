@@ -1,8 +1,12 @@
 package br.unitins;
+
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.http.ContentType;
+import io.restassured.response.Response;
+
 import org.junit.jupiter.api.Test;
 
+import br.unitins.dto.AuthUsuarioDTO;
 import br.unitins.dto.CidadeDTO;
 import br.unitins.dto.CidadeResponseDTO;
 import br.unitins.service.CidadeService;
@@ -13,18 +17,37 @@ import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
+import org.junit.jupiter.api.BeforeEach;
 
-import javax.inject.Inject;
-import javax.ws.rs.core.MediaType;
+import jakarta.inject.Inject;
+import jakarta.ws.rs.core.MediaType;
 
 @QuarkusTest
 public class CidadeResourceTest {
     @Inject
     CidadeService cidadeService;
+    private String token;
+
+    @BeforeEach
+    public void setUp() {
+        var auth = new AuthUsuarioDTO("dudadelo@gmail.com", "123");
+
+        Response response = (Response) given()
+                .contentType("application/json")
+                .body(auth)
+                .when().post("/auth")
+                .then().statusCode(200)
+                .extract()
+                .response();
+
+        token = response.header("Authorization");
+    }
 
     @Test
     public void getAllTest() {
+        
         given()
+        .header("Authorization", "Bearer " + token)
                 .when().get("/cidades")
                 .then()
                 .statusCode(200);
@@ -32,9 +55,10 @@ public class CidadeResourceTest {
 
     @Test
     public void insertcidadeTest() {
-        CidadeDTO cidade = new CidadeDTO("Palmas",1);
+        CidadeDTO cidade = new CidadeDTO("Palmas", (long) 2);
 
         given()
+        .header("Authorization", "Bearer " + token)
                 .contentType(ContentType.JSON)
                 .body(cidade)
                 .when().post("/cidades")
@@ -47,15 +71,16 @@ public class CidadeResourceTest {
         // Adicionando uma cidade no banco de dados
         CidadeDTO cidade = new CidadeDTO(
                 "Palmas",
-                1);
+                (long) 1);
         Long id = cidadeService.insert(cidade).id();
 
         // Criando outro cidade para atuailzacao
         CidadeDTO cidadeUpdate = new CidadeDTO(
                 "Goiatins",
-                2);
+                (long) 2);
 
         given()
+        .header("Authorization", "Bearer " + token)
                 .contentType(ContentType.JSON)
                 .body(cidadeUpdate)
                 .when().put("/cidades/" + id)
@@ -64,8 +89,7 @@ public class CidadeResourceTest {
 
         // Verificando se os dados foram atualizados no banco de dados
         CidadeResponseDTO cidadeResponse = cidadeService.findById(id);
-        assertThat(cidadeResponse.nome(), is("Palmas"));
-        assertThat(cidadeResponse.estado(), is(1));
+        assertThat(cidadeResponse.nome(), is("Goiatins"));
     }
 
     @Test
@@ -73,10 +97,11 @@ public class CidadeResourceTest {
         // Adicionando um cidade no banco de dados
         CidadeDTO cidade = new CidadeDTO(
                 "Paraiso",
-                1);
+                (long) 1);
         Long id = cidadeService.insert(cidade).id();
 
         given()
+        .header("Authorization", "Bearer " + token)
                 .when().delete("/cidades/" + id)
                 .then()
                 .statusCode(204);
@@ -95,6 +120,7 @@ public class CidadeResourceTest {
     @Test
     public void testFindById() {
         given()
+        .header("Authorization", "Bearer " + token)
                 .when().get("/cidades/1")
                 .then()
                 .statusCode(200)
@@ -104,6 +130,7 @@ public class CidadeResourceTest {
     @Test
     public void testCount() {
         given()
+        .header("Authorization", "Bearer " + token)
                 .when().get("/cidades/count")
                 .then()
                 .statusCode(200)
@@ -113,44 +140,46 @@ public class CidadeResourceTest {
     @Test
     public void testSearch() {
         given()
+        .header("Authorization", "Bearer " + token)
                 .when().get("/cidades/search/João")
                 .then()
                 .statusCode(200)
                 .body(notNullValue());
     }
 
-
-
     // Teste de método POST com validação de campos obrigatórios:
     @Test
     public void testInsertSemCamposPreenchidos() {
-        CidadeDTO dto = new CidadeDTO("",1); // dto sem nome
+        CidadeDTO dto = new CidadeDTO("", (long) 1); // dto sem nome
         given()
+        .header("Authorization", "Bearer " + token)
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(dto)
                 .when().post("/cidades")
                 .then()
-                .statusCode(404); 
+                .statusCode(404);
     }
 
     // Teste de método PUT com validação de existência de cidade:
     @Test
     public void testUpdateIdInexistente() {
-        CidadeDTO dto = new CidadeDTO("Fatima", 2);
+        CidadeDTO dto = new CidadeDTO("Fatima", (long) 2);
         given()
+        .header("Authorization", "Bearer " + token)
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(dto)
                 .when().put("/cidades/22") // id inválido
                 .then()
-                .statusCode(404); 
+                .statusCode(404);
     }
 
     // Teste de método DELETE com validação de existência de cidade:
     @Test
     public void testDeleteIdInexistente() {
         given()
+        .header("Authorization", "Bearer " + token)
                 .when().delete("/cidades/999") // id inválido
                 .then()
-                .statusCode(404); 
+                .statusCode(404);
     }
 }

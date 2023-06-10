@@ -11,15 +11,26 @@ public record UsuarioResponseDTO(
         Long id,
         String nome,
         String cpf,
-        String senha,
         String email,
         Telefone telefone,
-        List<Endereco> endereco,
-        List<Vinho> vinhosListaDesejos) {
-    public UsuarioResponseDTO(Usuario usuario) {
-        this(
-                usuario.getId(), usuario.getNome(), usuario.getCpf(), usuario.getSenha(), usuario.getEmail(),
+        Endereco endereco) {
+
+    public static UsuarioResponseDTO valueOf(Usuario usuario) {
+        if (usuario == null)
+            return new UsuarioResponseDTO(
+                    usuario.getId(),
+                    null,
+                    null,
+                    usuario.getEmail(),
+                    null,
+                    null);
+        return new UsuarioResponseDTO(
+                usuario.getId(),
+                usuario.getNome(),
+                usuario.getCpf(),
+                usuario.getEmail(),
                 usuario.getTelefone(),
-                usuario.getEnderecos(), usuario.getVinhosListaDesejos());
+                usuario.getEndereco()
+                );
     }
 }

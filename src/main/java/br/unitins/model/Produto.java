@@ -1,7 +1,10 @@
 package br.unitins.model;
 
-import javax.persistence.Column;
-import javax.persistence.MappedSuperclass;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.MappedSuperclass;
 
 
 @MappedSuperclass
@@ -12,6 +15,8 @@ public class Produto extends DefaultEntity{
     private int estoque;
     @Column(name = "preco")
     private Double preco;
+    
+    private String descricao;
 
     public String getNome() {
         return nome;
@@ -35,6 +40,14 @@ public class Produto extends DefaultEntity{
 
     public void setPreco(Double preco) {
         this.preco = preco;
+    }
+
+    public String getDescricao() {
+        return descricao;
+    }
+
+    public void setDescricao(String descricao) {
+        this.descricao = descricao;
     }
 
 }

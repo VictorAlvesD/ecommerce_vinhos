@@ -4,14 +4,14 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import javax.enterprise.context.ApplicationScoped;
-import javax.inject.Inject;
-import javax.transaction.Transactional;
-import javax.validation.ConstraintViolation;
-import javax.validation.ConstraintViolationException;
-import javax.validation.Validator;
-import javax.ws.rs.NotFoundException;
-
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.ConstraintViolationException;
+import jakarta.validation.Validator;
+import jakarta.ws.rs.NotFoundException;
+import br.unitins.dto.PagamentoResponseDTO;
 import br.unitins.dto.ProdutorDTO;
 import br.unitins.dto.ProdutorResponseDTO;
 import br.unitins.model.Produtor;
@@ -29,7 +29,7 @@ public class ProdutorServiceImpl implements ProdutorService {
     @Override
     public List<ProdutorResponseDTO> getAll() {
         List<Produtor> list = produtorRepository.listAll();
-        return list.stream().map(ProdutorResponseDTO::new).collect(Collectors.toList());
+        return list.stream().map(u -> ProdutorResponseDTO.valueOf(u)).collect(Collectors.toList());
     }
 
     @Override

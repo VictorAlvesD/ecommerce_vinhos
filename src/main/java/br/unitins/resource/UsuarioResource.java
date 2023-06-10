@@ -2,20 +2,22 @@ package br.unitins.resource;
 
 import java.util.List;
 
-import javax.inject.Inject;
-import javax.validation.ConstraintViolationException;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.DELETE;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
-
+import jakarta.annotation.security.PermitAll;
+import jakarta.annotation.security.RolesAllowed;
+import jakarta.inject.Inject;
+import jakarta.validation.ConstraintViolationException;
+import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.DELETE;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.PUT;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.Response.Status;
+import org.jboss.logging.Logger;
 import br.unitins.application.Result;
 import br.unitins.dto.UsuarioDTO;
 import br.unitins.dto.UsuarioResponseDTO;
@@ -28,65 +30,51 @@ import br.unitins.service.UsuarioService;
 public class UsuarioResource {
     @Inject
     UsuarioService usuarioService;
-
+private static final Logger LOG = Logger.getLogger(CidadeResource.class);
     @GET
+    @RolesAllowed({"Admin", "User"})
     public List<UsuarioResponseDTO> getAll() {
+        LOG.info("Buscando todos os cidades.");
+        LOG.debug("ERRO DE DEBUG.");
         return usuarioService.getAll();
     }
 
-    @POST
-    public Response insert(UsuarioDTO dto) {
-        try {
-            UsuarioResponseDTO usuario = usuarioService.insert(dto);
-            return Response.status(Status.CREATED).entity(usuario).build();
-        } catch (ConstraintViolationException e) {
-            Result result = new Result(e.getConstraintViolations());
-            return Response.status(Status.NOT_FOUND).entity(result).build();
-        }
-    }
-
-    @PUT
-    @Path("/{id}")
-    public Response update(@PathParam("id") Long id, UsuarioDTO dto) {
-        try {
-            UsuarioResponseDTO usuario = usuarioService.update(id, dto);
-            return Response.ok(usuario).build();
-        } catch (ConstraintViolationException e) {
-            Result result = new Result(e.getConstraintViolations());
-            return Response.status(Status.NOT_FOUND).entity(result).build();
-        } catch (NullPointerException e) {
-            Result result = new Result(e.getMessage());
-            return Response.status(Status.NOT_FOUND).entity(result).build();
-        }
-    }
-
     @DELETE
+    @RolesAllowed({"Admin", "User"})
     @Path("/{id}")
     public Response delete(@PathParam("id") Long id) {
+        Result result = null;
         try {
             usuarioService.delete(id);
+            LOG.infof("usuario (%d) apagado com sucesso.");
             return Response.status(Status.NO_CONTENT).build();
         } catch (NullPointerException e) {
-            Result result = new Result(e.getMessage());
-            return Response.status(Status.NOT_FOUND).entity(result).build();
+            LOG.error("Erro ao apagar um usuario.");
+            LOG.debug(e.getMessage());
+            result = new Result(e.getMessage());
         }
+        return Response.status(Status.NOT_FOUND).entity(result).build();
     }
 
     @GET
+    @RolesAllowed({"Admin", "User"})
     @Path("/{id}")
     public UsuarioResponseDTO findById(@PathParam("id") Long id) {
         return usuarioService.findById(id);
     }
-
+    
     @GET
+    @RolesAllowed({"Admin", "User"})
     @Path("/count")
     public long count() {
         return usuarioService.count();
     }
 
     @GET
+    @RolesAllowed({"Admin", "User"})
     @Path("/search/{cpf}")
     public List<UsuarioResponseDTO> search(@PathParam("cpf") String cpf) {
         return usuarioService.findByCpf(cpf);
     }
+    
 }

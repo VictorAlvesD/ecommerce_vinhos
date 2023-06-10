@@ -2,24 +2,26 @@ package br.unitins.resource;
 
 import java.util.List;
 
-import javax.inject.Inject;
-import javax.validation.ConstraintViolationException;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.DELETE;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
+import jakarta.annotation.security.RolesAllowed;
+import jakarta.inject.Inject;
+import jakarta.validation.ConstraintViolationException;
+import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.DELETE;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.PUT;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.Response.Status;
 
 import br.unitins.application.Result;
 import br.unitins.dto.EstadoResponseDTO;
 import br.unitins.dto.EstadoDTO;
 import br.unitins.service.EstadoService;
+import org.jboss.logging.Logger;
 
 @Path("/estados")
 @Consumes(MediaType.APPLICATION_JSON)
@@ -27,57 +29,84 @@ import br.unitins.service.EstadoService;
 public class EstadoResource {
     @Inject
     EstadoService estadoService;
+    private static final Logger LOG = Logger.getLogger(CidadeResource.class);
 
     @GET
+    @RolesAllowed({ "Admin", "User" })
     public List<EstadoResponseDTO> getAll() {
+        LOG.info("Buscando todos os estados.");
+        LOG.debug("ERRO DE DEBUG.");
         return estadoService.getAll();
     }
 
     @POST
+    @RolesAllowed({ "Admin", "User" })
     public Response insert(EstadoDTO dto) {
+        LOG.infof("Inserindo uma cidade: %s", dto.getClass());
+        Result result = null;
         try {
             EstadoResponseDTO estado = estadoService.insert(dto);
+            LOG.infof("Estado (%d) criado com sucesso.", estado.id());
             return Response.status(Status.CREATED).entity(estado).build();
         } catch (ConstraintViolationException e) {
-            Result result = new Result(e.getConstraintViolations());
-            return Response.status(Status.NOT_FOUND).entity(result).build();
+            LOG.error("Erro ao incluir uma estado.");
+            LOG.debug(e.getMessage());
+        } catch (Exception e) {
+            LOG.fatal("Erro sem identificacao: " + e.getMessage());
+            result = new Result(e.getMessage(), false);
         }
+        return Response.status(Status.NOT_FOUND).entity(result).build();
     }
 
+
     @PUT
+    @RolesAllowed({ "Admin", "User" })
     @Path("/{id}")
     public Response update(@PathParam("id") Long id, EstadoDTO dto) {
+        LOG.infof("Atualizando uma cidade: %s", dto.getClass());
+        Result result = null;
         try {
             EstadoResponseDTO estado = estadoService.update(id, dto);
-            return Response.ok(estado).build();
+            LOG.infof("Cidade (%d) atualizada com sucesso.", estado.id());
+            return Response.noContent().build();
         } catch (ConstraintViolationException e) {
-            Result result = new Result(e.getConstraintViolations());
-            return Response.status(Status.NOT_FOUND).entity(result).build();
-        } catch (NullPointerException e) {
-            Result result = new Result(e.getMessage());
-            return Response.status(Status.NOT_FOUND).entity(result).build();
+            LOG.error("Erro ao atualizar uma cidade.");
+            LOG.debug(e.getMessage());
+            return Response.status(Response.Status.NOT_FOUND).entity(result).build();
+        } catch (Exception e) {
+            LOG.fatal("Erro sem identificacao: " + e.getMessage());
+            result = new Result(e.getMessage());
+
         }
+        return Response.status(Response.Status.NOT_FOUND).entity(result).build();
     }
 
     @DELETE
+    @RolesAllowed({ "Admin", "User" })
     @Path("/{id}")
     public Response delete(@PathParam("id") Long id) {
+        Result result = null;
         try {
             estadoService.delete(id);
+            LOG.infof("Estado (%d) apagado com sucesso.");
             return Response.status(Status.NO_CONTENT).build();
-        } catch (NullPointerException e) {
-            Result result = new Result(e.getMessage());
-            return Response.status(Status.NOT_FOUND).entity(result).build();
+        }  catch (NullPointerException e) {
+            LOG.error("Erro ao apagar uma cidade.");
+            LOG.debug(e.getMessage());
+            result = new Result(e.getMessage());
         }
+        return Response.status(Status.NOT_FOUND).entity(result).build();
     }
 
     @GET
+    @RolesAllowed({ "Admin", "User" })
     @Path("/{id}")
     public EstadoResponseDTO findById(@PathParam("id") Long id) {
         return estadoService.findById(id);
     }
 
     @GET
+    @RolesAllowed({ "Admin", "User" })
     @Path("/count")
     public long count() {
         return estadoService.count();

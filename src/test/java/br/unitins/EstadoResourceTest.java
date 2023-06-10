@@ -1,8 +1,12 @@
 package br.unitins;
+
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.http.ContentType;
+import io.restassured.response.Response;
+
 import org.junit.jupiter.api.Test;
 
+import br.unitins.dto.AuthUsuarioDTO;
 import br.unitins.dto.EstadoDTO;
 import br.unitins.dto.EstadoResponseDTO;
 import br.unitins.service.EstadoService;
@@ -14,18 +18,36 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
+import org.junit.jupiter.api.BeforeEach;
 
-import javax.inject.Inject;
-import javax.ws.rs.core.MediaType;
+import jakarta.inject.Inject;
+import jakarta.ws.rs.core.MediaType;
 
 @QuarkusTest
 public class EstadoResourceTest {
     @Inject
     EstadoService estadoService;
+    private String token;
+
+    @BeforeEach
+    public void setUp() {
+        var auth = new AuthUsuarioDTO("teste", "12345");
+
+        Response response = (Response) given()
+                .contentType("application/json")
+                .body(auth)
+                .when().post("/auth")
+                .then().statusCode(200)
+                .extract()
+                .response();
+
+        token = response.header("Authorization");
+    }
 
     @Test
     public void getAllTest() {
         given()
+        .header("Authorization", "Bearer " + token)
                 .when().get("/estados")
                 .then()
                 .statusCode(200);
@@ -36,6 +58,7 @@ public class EstadoResourceTest {
         EstadoDTO estado = new EstadoDTO("Tocantins", "TO");
 
         given()
+        .header("Authorization", "Bearer " + token)
                 .contentType(ContentType.JSON)
                 .body(estado)
                 .when().post("/estados")
@@ -57,6 +80,7 @@ public class EstadoResourceTest {
                 "TO");
 
         given()
+        .header("Authorization", "Bearer " + token)
                 .contentType(ContentType.JSON)
                 .body(estadoUpdate)
                 .when().put("/estados/" + id)
@@ -78,6 +102,7 @@ public class EstadoResourceTest {
         Long id = estadoService.insert(estado).id();
 
         given()
+        .header("Authorization", "Bearer " + token)
                 .when().delete("/estados/" + id)
                 .then()
                 .statusCode(204);
@@ -96,6 +121,7 @@ public class EstadoResourceTest {
     @Test
     public void testFindById() {
         given()
+        .header("Authorization", "Bearer " + token)
                 .when().get("/estados/1")
                 .then()
                 .statusCode(200)
@@ -105,6 +131,7 @@ public class EstadoResourceTest {
     @Test
     public void testCount() {
         given()
+        .header("Authorization", "Bearer " + token)
                 .when().get("/estados/count")
                 .then()
                 .statusCode(200)
@@ -114,6 +141,7 @@ public class EstadoResourceTest {
     @Test
     public void testSearch() {
         given()
+        .header("Authorization", "Bearer " + token)
                 .when().get("/estados/search/João")
                 .then()
                 .statusCode(200)
@@ -123,8 +151,9 @@ public class EstadoResourceTest {
     // Teste de método GET que espera um resultado específico:
     @Test
     public void testFindById2() {
-        EstadoResponseDTO expectedResponse = new EstadoResponseDTO( (long) 1,"Tocantins", "TO");
+        EstadoResponseDTO expectedResponse = new EstadoResponseDTO((long) 1, "Tocantins", "TO");
         EstadoResponseDTO actualResponse = given()
+        .header("Authorization", "Bearer " + token)
                 .when().get("/estados/1")
                 .then()
                 .statusCode(200)
@@ -135,13 +164,14 @@ public class EstadoResourceTest {
     // Teste de método POST com validação de campos obrigatórios:
     @Test
     public void testInsertSemCamposPreenchidos() {
-        EstadoDTO dto = new EstadoDTO("","Brasil"); // dto sem nome
+        EstadoDTO dto = new EstadoDTO("", "Brasil"); // dto sem nome
         given()
+        .header("Authorization", "Bearer " + token)
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(dto)
                 .when().post("/estados")
                 .then()
-                .statusCode(404); 
+                .statusCode(404);
     }
 
     // Teste de método PUT com validação de existência de Estado:
@@ -149,19 +179,21 @@ public class EstadoResourceTest {
     public void testUpdateIdInexistente() {
         EstadoDTO dto = new EstadoDTO("Família Silva", "Italia");
         given()
+        .header("Authorization", "Bearer " + token)
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(dto)
                 .when().put("/estados/22") // id inválido
                 .then()
-                .statusCode(404); 
+                .statusCode(404);
     }
 
     // Teste de método DELETE com validação de existência de Estado:
     @Test
     public void testDeleteIdInexistente() {
         given()
+        .header("Authorization", "Bearer " + token)
                 .when().delete("/estados/999") // id inválido
                 .then()
-                .statusCode(404); 
+                .statusCode(404);
     }
 }

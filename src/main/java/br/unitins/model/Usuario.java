@@ -2,20 +2,23 @@ package br.unitins.model;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Entity;
-import javax.persistence.JoinTable;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToMany;
-import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
-
-import com.fasterxml.jackson.annotation.JsonBackReference;
+import jakarta.persistence.CollectionTable;
+import jakarta.persistence.Column;
+import jakarta.persistence.ElementCollection;
+import jakarta.persistence.Entity;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 
 @Entity
 public class Usuario extends DefaultEntity {
 
+    private String nomeImagem;
+    
     private String nome;
 
     private String cpf;
@@ -24,17 +27,28 @@ public class Usuario extends DefaultEntity {
 
     private String email;
 
+    @ElementCollection
+    @CollectionTable(name = "perfis", joinColumns = @JoinColumn(name = "id_usuario", referencedColumnName = "id"))
+    @Column(name = "perfil", length = 30)
+    private Set<Perfil> perfil;
+
     @OneToOne
     private Telefone telefone;
 
-    @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonBackReference
-    private List<Endereco> enderecos = new ArrayList<>();
-
+    @OneToOne()
+    private Endereco endereco;
 
     @ManyToMany
     @JoinTable(name = "listadesejos", joinColumns = @JoinColumn(name = "usuario"), inverseJoinColumns = @JoinColumn(name = "vinho"))
     private List<Vinho> vinhosListaDesejos = new ArrayList<>();
+
+    public Set<Perfil> getPerfil() {
+        return perfil;
+    }
+
+    public void setPerfis(Set<Perfil> perfil) {
+        this.perfil = perfil;
+    }
 
     public String getNome() {
         return nome;
@@ -76,8 +90,6 @@ public class Usuario extends DefaultEntity {
         this.telefone = telefone;
     }
 
-
-
     public List<Vinho> getVinhosListaDesejos() {
         return vinhosListaDesejos;
     }
@@ -86,18 +98,29 @@ public class Usuario extends DefaultEntity {
         this.vinhosListaDesejos = vinhosListaDesejos;
     }
 
-    public List<Endereco> getEnderecos() {
-        return enderecos;
+    public void setPerfil(Set<Perfil> perfil) {
+        this.perfil = perfil;
     }
 
-    public void setEnderecos(List<Endereco> enderecos) {
-        this.enderecos = enderecos;
+    public Endereco getEndereco() {
+        return endereco;
     }
 
-    
+    public void setEndereco(Endereco endereco) {
+        this.endereco = endereco;
+    }
 
-    
+    public void setEndereco(Long endereco2) {
+    }
 
-    
+    public String getNomeImagem() {
+        return nomeImagem;
+    }
+
+    public void setNomeImagem(String nomeImagem) {
+        this.nomeImagem = nomeImagem;
+    }
+
+   
 
 }

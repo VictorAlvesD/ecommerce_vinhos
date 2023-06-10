@@ -3,15 +3,16 @@ package br.unitins.model;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToMany;
-import javax.persistence.ManyToOne;
-import javax.persistence.PrimaryKeyJoinColumn;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.PrimaryKeyJoinColumn;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+
 
 @Entity
 @PrimaryKeyJoinColumn(name = "id")
@@ -29,7 +30,9 @@ public class Vinho extends Produto {
     @ManyToOne
     @JoinColumn(name = "produtor")
     private Produtor produtor;
-
+    
+    private String nomeImagem;
+    
     public String getTeorAlcoolico() {
         return teorAlcoolico;
     }
@@ -56,6 +59,14 @@ public class Vinho extends Produto {
 
     public TipoVinho getTipoVinho() {
         return tipoVinho;
+    }
+
+    public String getNomeImagem() {
+        return nomeImagem;
+    }
+
+    public void setNomeImagem(String nomeImagem) {
+        this.nomeImagem = nomeImagem;
     }
 
     public void setTipoVinho(TipoVinho tipoVinho) {
