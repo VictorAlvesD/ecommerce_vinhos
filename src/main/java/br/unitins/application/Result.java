@@ -14,7 +14,7 @@ public class Result {
         this.message = message;
     }
 
-    public Result(String message, boolean success ) {
+    public Result(String message, boolean success) {
         this.success = success;
         this.message = message;
     }
@@ -22,11 +22,9 @@ public class Result {
     public Result(Set<? extends ConstraintViolation<?>> violations) {
         this.success = false;
         this.message = violations.stream()
-            .map(cv -> cv.getMessage())
+                .map(cv -> cv.getMessage())
                 .collect(Collectors.joining(", "));
     }
-
-    
 
     public String getMessage() {
         return message;

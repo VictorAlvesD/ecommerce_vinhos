@@ -13,16 +13,17 @@ import jakarta.ws.rs.NotFoundException;
 
 import br.unitins.dto.EnderecoDTO;
 import br.unitins.dto.EnderecoResponseDTO;
+import br.unitins.model.Cidade;
 import br.unitins.model.Endereco;
+import br.unitins.repository.CidadeRepository;
 import br.unitins.repository.EnderecoRepository;
-import br.unitins.repository.EstadoRepository;
 
 @ApplicationScoped
 public class EnderecoServiceImpl implements EnderecoService{
     @Inject
     EnderecoRepository enderecoRepository;
     @Inject
-    EstadoRepository cidadeRepository;
+    CidadeRepository cidadeRepository;
     @Inject
     Validator validator;
 
@@ -55,8 +56,10 @@ public class EnderecoServiceImpl implements EnderecoService{
         entity.setBairro(enderecoDTO.bairro());
         entity.setCep(enderecoDTO.cep());
         entity.setComplemento(enderecoDTO.complemento());
-        
 
+        Cidade cidade = cidadeRepository.findById(enderecoDTO.idCidade());
+        entity.setCidade(cidade);
+        
         enderecoRepository.persist(entity);
 
         return new EnderecoResponseDTO(entity);
@@ -81,7 +84,8 @@ public class EnderecoServiceImpl implements EnderecoService{
         entity.setCep(enderecoDTO.cep());
         entity.setComplemento(enderecoDTO.complemento());
 
-        entity.setCidade(cidadeRepository.findById(enderecoDTO.cidade()));
+        Cidade cidade = cidadeRepository.findById(enderecoDTO.idCidade());
+        entity.setCidade(cidade);
 
         enderecoRepository.persist(entity);
 

@@ -4,6 +4,7 @@ import java.util.List;
 
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.DELETE;
@@ -27,23 +28,23 @@ import org.jboss.logging.Logger;
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
 public class EstadoResource {
-    @Inject
+   @Inject
     EstadoService estadoService;
-    private static final Logger LOG = Logger.getLogger(CidadeResource.class);
+
+    private static final Logger LOG = Logger.getLogger(EstadoResource.class);
 
     @GET
     @RolesAllowed({ "Admin", "User" })
     public List<EstadoResponseDTO> getAll() {
         LOG.info("Buscando todos os estados.");
-        LOG.debug("ERRO DE DEBUG.");
+        LOG.debug("Debug de busca de lista de estados.");
         return estadoService.getAll();
     }
-
     @POST
+    @Transactional
     @RolesAllowed({ "Admin", "User" })
     public Response insert(EstadoDTO dto) {
         LOG.infof("Inserindo uma cidade: %s", dto.getClass());
-        Result result = null;
         try {
             EstadoResponseDTO estado = estadoService.insert(dto);
             LOG.infof("Estado (%d) criado com sucesso.", estado.id());
@@ -51,11 +52,9 @@ public class EstadoResource {
         } catch (ConstraintViolationException e) {
             LOG.error("Erro ao incluir uma estado.");
             LOG.debug(e.getMessage());
-        } catch (Exception e) {
-            LOG.fatal("Erro sem identificacao: " + e.getMessage());
-            result = new Result(e.getMessage(), false);
-        }
-        return Response.status(Status.NOT_FOUND).entity(result).build();
+            Result result = new Result(e.getConstraintViolations());
+            return Response.status(Status.NOT_FOUND).entity(result).build();
+        } 
     }
 
 

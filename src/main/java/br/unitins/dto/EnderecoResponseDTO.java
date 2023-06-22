@@ -5,15 +5,20 @@ import br.unitins.model.Endereco;
 
 public record EnderecoResponseDTO(
         Long id,
-        String cep,
         String rua,
         String numero,
+        String bairro,
         String complemento,
+        String cep,
         Cidade cidade) {
     public EnderecoResponseDTO(Endereco endereco) {
-        this(endereco.getId(),endereco.getCep(), endereco.getRua(), endereco.getBairro(), endereco.getComplemento(),
+        this(endereco.getId(),
+                endereco.getRua(),
+                endereco.getNumero(),
+                endereco.getBairro(),
+                endereco.getComplemento(),
+                endereco.getCep(),
                 endereco.getCidade());
     }
-
 
 }

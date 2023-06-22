@@ -10,15 +10,5 @@ public record ProdutorResponseDTO(
     public ProdutorResponseDTO (Produtor produtor){
         this(produtor.getId(), produtor.getNome(), produtor.getPais());
     }
-    public static ProdutorResponseDTO valueOf(Produtor produtor) {
-        if (produtor == null)
-            return null;
-
-        return new ProdutorResponseDTO(
-            produtor.getId(),
-            produtor.getNome(),
-            produtor.getPais()
-        );
-    }
 }
 

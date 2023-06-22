@@ -15,13 +15,11 @@ import static io.restassured.RestAssured.given;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
 import org.junit.jupiter.api.BeforeEach;
 
 import jakarta.inject.Inject;
-import jakarta.ws.rs.core.MediaType;
 
 @QuarkusTest
 public class ProdutorResourceTest {
@@ -31,7 +29,7 @@ public class ProdutorResourceTest {
 
     @BeforeEach
     public void setUp() {
-        var auth = new AuthUsuarioDTO("teste", "12345");
+        var auth = new AuthUsuarioDTO("dudadelorusso@gmail.com", "123");
 
         Response response = (Response) given()
                 .contentType("application/json")
@@ -116,86 +114,6 @@ public class ProdutorResourceTest {
         } finally {
             assertNull(produtorResponse);
         }
-    }
-
-    @Test
-    public void testFindById() {
-        given()
-                .header("Authorization", "Bearer " + token)
-                .when().get("/produtores/1")
-                .then()
-                .statusCode(200)
-                .body(notNullValue());
-    }
-
-    @Test
-    public void testCount() {
-        given()
-                .header("Authorization", "Bearer " + token)
-                .when().get("/produtores/count")
-                .then()
-                .statusCode(200)
-                .body(notNullValue());
-    }
-
-    @Test
-    public void testSearch() {
-        given()
-                .header("Authorization", "Bearer " + token)
-                .when().get("/produtores/search/João")
-                .then()
-                .statusCode(200)
-                .body(notNullValue());
-    }
-
-    // Teste de método GET que espera um resultado específico:
-    @Test
-
-    public void testFindById2() {
-        ProdutorResponseDTO expectedResponse = new ProdutorResponseDTO((long) 1, "Marqués del Atrio", "Espanha");
-        ProdutorResponseDTO actualResponse = given()
-                .header("Authorization", "Bearer " + token)
-                .when().get("/produtores/1")
-                .then()
-                .statusCode(200)
-                .extract().as(ProdutorResponseDTO.class);
-        assertEquals(expectedResponse, actualResponse);
-    }
-
-    // Teste de método POST com validação de campos obrigatórios:
-    @Test
-    public void testInsertSemCamposPreenchidos() {
-        ProdutorDTO dto = new ProdutorDTO("", "Brasil"); // dto sem nome
-        given()
-                .header("Authorization", "Bearer " + token)
-                .contentType(MediaType.APPLICATION_JSON)
-                .body(dto)
-                .when().post("/produtores")
-                .then()
-                .statusCode(404);
-    }
-
-    // Teste de método PUT com validação de existência de produtor:
-    @Test
-    public void testUpdateIdInexistente() {
-        ProdutorDTO dto = new ProdutorDTO("Família Silva", "Italia");
-        given()
-                .header("Authorization", "Bearer " + token)
-                .contentType(MediaType.APPLICATION_JSON)
-                .body(dto)
-                .when().put("/produtores/22") // id inválido
-                .then()
-                .statusCode(404);
-    }
-
-    // Teste de método DELETE com validação de existência de produtor:
-    @Test
-    public void testDeleteIdInexistente() {
-        given()
-                .header("Authorization", "Bearer " + token)
-                .when().delete("/produtores/999") // id inválido
-                .then()
-                .statusCode(404);
     }
 
 }

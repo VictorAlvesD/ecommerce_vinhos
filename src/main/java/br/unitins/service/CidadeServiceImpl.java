@@ -14,6 +14,7 @@ import jakarta.ws.rs.NotFoundException;
 
 import br.unitins.dto.CidadeDTO;
 import br.unitins.dto.CidadeResponseDTO;
+import br.unitins.dto.EstadoResponseDTO;
 import br.unitins.model.Cidade;
 import br.unitins.repository.CidadeRepository;
 import br.unitins.repository.EstadoRepository;
@@ -29,8 +30,10 @@ public class CidadeServiceImpl implements CidadeService {
 
     @Override
     public List<CidadeResponseDTO> getAll() {
-        List<Cidade> list = cidadeRepository.listAll();
-        return list.stream().map(CidadeResponseDTO::new).collect(Collectors.toList());
+        return cidadeRepository.findAll()
+                .stream()
+                .map(CidadeResponseDTO::new)
+                .collect(Collectors.toList());
     }
 
     @Override

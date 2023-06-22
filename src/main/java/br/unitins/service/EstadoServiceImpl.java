@@ -19,16 +19,18 @@ import br.unitins.repository.EstadoRepository;
 
 @ApplicationScoped
 public class EstadoServiceImpl implements EstadoService {
-    @Inject
+   @Inject
     EstadoRepository estadoRepository;
 
     @Inject
     Validator validator;
-
+    
     @Override
     public List<EstadoResponseDTO> getAll() {
-         List<Estado> list = estadoRepository.listAll();
-        return list.stream().map(EstadoResponseDTO::new).collect(Collectors.toList());
+        return estadoRepository.findAll()
+                                        .stream()
+                                        .map(EstadoResponseDTO::new)
+                                        .collect(Collectors.toList());
     }
 
     @Override
@@ -41,11 +43,11 @@ public class EstadoServiceImpl implements EstadoService {
 
     @Override
     @Transactional
-    public EstadoResponseDTO insert(EstadoDTO estadoDTO) throws ConstraintViolationException{
+    public EstadoResponseDTO insert(EstadoDTO estadoDTO) throws ConstraintViolationException {
         validar(estadoDTO);
 
         Estado entity = new Estado();
-        
+
         entity.setNome(estadoDTO.nome());
         entity.setSigla(estadoDTO.sigla());
 
@@ -53,17 +55,18 @@ public class EstadoServiceImpl implements EstadoService {
 
         return new EstadoResponseDTO(entity);
     }
+
     private void validar(EstadoDTO estadoDTO) throws ConstraintViolationException {
-        Set <ConstraintViolation<EstadoDTO>> violations = validator.validate(estadoDTO);
+        Set<ConstraintViolation<EstadoDTO>> violations = validator.validate(estadoDTO);
         if (!violations.isEmpty())
             throw new ConstraintViolationException(violations);
     }
 
     @Override
     @Transactional
-    public EstadoResponseDTO update(Long id, EstadoDTO estadoDTO)  throws ConstraintViolationException{
+    public EstadoResponseDTO update(Long id, EstadoDTO estadoDTO) throws ConstraintViolationException {
         validar(estadoDTO);
-   
+
         Estado entity = estadoRepository.findById(id);
         validarId(entity);
         entity.setNome(estadoDTO.nome());
@@ -71,10 +74,12 @@ public class EstadoServiceImpl implements EstadoService {
 
         return new EstadoResponseDTO(entity);
     }
+
     private void validarId(Estado estado) throws ConstraintViolationException {
         if (estado.getId() == null)
             throw new NullPointerException("Id inválido");
     }
+
     @Override
     @Transactional
     public void delete(Long id) {

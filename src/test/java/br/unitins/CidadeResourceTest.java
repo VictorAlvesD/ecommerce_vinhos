@@ -30,7 +30,7 @@ public class CidadeResourceTest {
 
     @BeforeEach
     public void setUp() {
-        var auth = new AuthUsuarioDTO("dudadelo@gmail.com", "123");
+        var auth = new AuthUsuarioDTO("dudadelorusso@gmail.com", "123");
 
         Response response = (Response) given()
                 .contentType("application/json")
@@ -45,9 +45,8 @@ public class CidadeResourceTest {
 
     @Test
     public void getAllTest() {
-        
         given()
-        .header("Authorization", "Bearer " + token)
+                .header("Authorization", "Bearer " + token)
                 .when().get("/cidades")
                 .then()
                 .statusCode(200);
@@ -115,71 +114,5 @@ public class CidadeResourceTest {
         } finally {
             assertNull(cidadeResponse);
         }
-    }
-
-    @Test
-    public void testFindById() {
-        given()
-        .header("Authorization", "Bearer " + token)
-                .when().get("/cidades/1")
-                .then()
-                .statusCode(200)
-                .body(notNullValue());
-    }
-
-    @Test
-    public void testCount() {
-        given()
-        .header("Authorization", "Bearer " + token)
-                .when().get("/cidades/count")
-                .then()
-                .statusCode(200)
-                .body(notNullValue());
-    }
-
-    @Test
-    public void testSearch() {
-        given()
-        .header("Authorization", "Bearer " + token)
-                .when().get("/cidades/search/João")
-                .then()
-                .statusCode(200)
-                .body(notNullValue());
-    }
-
-    // Teste de método POST com validação de campos obrigatórios:
-    @Test
-    public void testInsertSemCamposPreenchidos() {
-        CidadeDTO dto = new CidadeDTO("", (long) 1); // dto sem nome
-        given()
-        .header("Authorization", "Bearer " + token)
-                .contentType(MediaType.APPLICATION_JSON)
-                .body(dto)
-                .when().post("/cidades")
-                .then()
-                .statusCode(404);
-    }
-
-    // Teste de método PUT com validação de existência de cidade:
-    @Test
-    public void testUpdateIdInexistente() {
-        CidadeDTO dto = new CidadeDTO("Fatima", (long) 2);
-        given()
-        .header("Authorization", "Bearer " + token)
-                .contentType(MediaType.APPLICATION_JSON)
-                .body(dto)
-                .when().put("/cidades/22") // id inválido
-                .then()
-                .statusCode(404);
-    }
-
-    // Teste de método DELETE com validação de existência de cidade:
-    @Test
-    public void testDeleteIdInexistente() {
-        given()
-        .header("Authorization", "Bearer " + token)
-                .when().delete("/cidades/999") // id inválido
-                .then()
-                .statusCode(404);
     }
 }

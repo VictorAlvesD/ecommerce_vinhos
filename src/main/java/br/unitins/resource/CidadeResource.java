@@ -4,6 +4,7 @@ import java.util.List;
 
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.DELETE;
@@ -41,25 +42,20 @@ public class CidadeResource {
     }
 
     @POST
+    @Transactional
     @RolesAllowed({ "Admin", "User" })
     public Response insert(CidadeDTO dto) {
         LOG.infof("Inserindo uma cidade: %s", dto.getClass());
-        Result result = null;
         try {
             CidadeResponseDTO cidade = cidadeService.insert(dto);
             LOG.infof("Cidade (%d) criado com sucesso.", cidade.id());
             return Response.status(Status.CREATED).entity(cidade).build();
-
         } catch (ConstraintViolationException e) {
-            LOG.error("Erro ao incluir uma cidade.");
+            LOG.error("Erro ao incluir uma estado.");
             LOG.debug(e.getMessage());
-            result = new Result(e.getConstraintViolations());
-        } catch (Exception e) {
-            LOG.fatal("Erro sem identificacao: " + e.getMessage());
-            result = new Result(e.getMessage(), false);
-
+            Result result = new Result(e.getConstraintViolations());
+            return Response.status(Status.NOT_FOUND).entity(result).build();
         }
-        return Response.status(Status.NOT_FOUND).entity(result).build();
     }
 
     @PUT

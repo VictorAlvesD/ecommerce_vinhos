@@ -16,7 +16,7 @@ import br.unitins.dto.ProdutorDTO;
 import br.unitins.dto.ProdutorResponseDTO;
 import br.unitins.model.Produtor;
 import br.unitins.repository.ProdutorRepository;
-
+/* 
 @ApplicationScoped
 public class ProdutorServiceImpl implements ProdutorService {
 
@@ -26,10 +26,10 @@ public class ProdutorServiceImpl implements ProdutorService {
     @Inject
     Validator validator;
 
-    @Override
+   @Override
     public List<ProdutorResponseDTO> getAll() {
         List<Produtor> list = produtorRepository.listAll();
-        return list.stream().map(u -> ProdutorResponseDTO.valueOf(u)).collect(Collectors.toList());
+        return list.stream().map(u -> ProdutorResponseDTO.valueOf(u)).collect(Collectors.toList()); 
     }
 
     @Override
@@ -94,3 +94,5 @@ public class ProdutorServiceImpl implements ProdutorService {
     }
 
 }
+
+*/
