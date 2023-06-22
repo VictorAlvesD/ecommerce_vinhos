@@ -13,14 +13,12 @@ import br.unitins.service.TelefoneService;
 
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
 import org.junit.jupiter.api.BeforeEach;
 
 import jakarta.inject.Inject;
-import jakarta.ws.rs.core.MediaType;
 
 @QuarkusTest
 public class TelefoneResourceTest {
@@ -30,7 +28,7 @@ public class TelefoneResourceTest {
 
     @BeforeEach
     public void setUp() {
-        var auth = new AuthUsuarioDTO("dudadelo@gmail.com", "123");
+        var auth = new AuthUsuarioDTO("duda", "123");
 
         Response response = (Response) given()
                 .contentType("application/json")

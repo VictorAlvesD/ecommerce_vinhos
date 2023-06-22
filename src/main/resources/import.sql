@@ -51,7 +51,7 @@ VALUES ( 'Alameda 07', '85', '204 Sul', 'Enfrente ao supermercado', '99698-299',
 
 -- Usuários:
 INSERT INTO usuario (  nome, cpf, senha, email, telefone_id)
-VALUES ( 'Duda Delo Russo', '001.002.003-78', 'TRwn0XU29Gwl2sagG00bvjrNJvLuYo+dbOBJ7R3xFpU4m/FAUc5q8OoGbVNwPF7F5713RaYkN4qyufNCDHm/mA==', 'dudadelo@gmail.com', 1);
+VALUES ( 'Duda Delo Russo', '001.002.003-78', 'TRwn0XU29Gwl2sagG00bvjrNJvLuYo+dbOBJ7R3xFpU4m/FAUc5q8OoGbVNwPF7F5713RaYkN4qyufNCDHm/mA==', 'duda', 1);
 INSERT INTO usuario (  nome, cpf, senha, email, telefone_id )
 VALUES ( 'Bruno Alencar da Silva', '021.002.003-33', 'TRwn0XU29Gwl2sagG00bvjrNJvLuYo+dbOBJ7R3xFpU4m/FAUc5q8OoGbVNwPF7F5713RaYkN4qyufNCDHm/mA==', 'brunoalencar@gmail.com', 2);
 INSERT INTO usuario (  nome, cpf, senha, email, telefone_id )

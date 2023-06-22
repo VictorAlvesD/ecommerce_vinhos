@@ -6,6 +6,7 @@ import br.unitins.model.Endereco;
 public record EnderecoResponseDTO(
         Long id,
         String rua,
+        
         String numero,
         String bairro,
         String complemento,

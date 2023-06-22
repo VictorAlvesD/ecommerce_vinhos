@@ -13,14 +13,12 @@ import br.unitins.service.VinhoService;
 
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
 import org.junit.jupiter.api.BeforeEach;
 
 import jakarta.inject.Inject;
-import jakarta.ws.rs.core.MediaType;
 
 @QuarkusTest
 public class VinhoResourceTest {
@@ -30,7 +28,7 @@ public class VinhoResourceTest {
 
     @BeforeEach
     public void setUp() {
-        var auth = new AuthUsuarioDTO("teste", "12345");
+        var auth = new AuthUsuarioDTO("duda", "123");
 
         Response response = (Response) given()
                 .contentType("application/json")
@@ -66,4 +64,48 @@ public class VinhoResourceTest {
                 .statusCode(201);
     }
 
+    @Test
+    public void testUpdate() {
+        VinhoDTO vinho = new VinhoDTO("Valtier Reserva", 15, (double) 50, "13%",
+                "Produzido a partir das uvas Tempranillo Bobal.", "Tempranillo Bobal", 1, 1);
+
+        Long id = vinhoService.insert(vinho).id();
+
+        VinhoDTO vinho2 = new VinhoDTO("Valtier", 50, (double) 50, "13%",
+                "Produzido a partir das uvas Tempranillo Bobal.", "Tempranillo Bobal", 1, 1);
+
+        given()
+                .header("Authorization", "Bearer " + token)
+                .contentType(ContentType.JSON)
+                .body(vinho2)
+                .when().put("/vinhos/" + id)
+                .then()
+                .statusCode(204);
+
+        VinhoResponseDTO vinhoResponse = vinhoService.findById(id);
+        assertThat(vinhoResponse.nome(), is("Valtier"));
+        assertThat(vinhoResponse.estoque(), is(50));
+    }
+
+    @Test
+    public void testDelete() {
+        VinhoDTO vinho = new VinhoDTO("Valtier Reserva", 15, (double) 50, "13%",
+                "Produzido a partir das uvas Tempranillo Bobal.", "Tempranillo Bobal", 1, 1);
+        Long id = vinhoService.insert(vinho).id();
+
+        given()
+                .header("Authorization", "Bearer " + token)
+                .when().delete("/vinhos/" + id)
+                .then()
+                .statusCode(204);
+
+        VinhoResponseDTO vinhoResponse = null;
+        try {
+            vinhoResponse = vinhoService.findById(id);
+        } catch (Exception e) {
+
+        } finally {
+            assertNull(vinhoResponse);
+        }
+    }
 }

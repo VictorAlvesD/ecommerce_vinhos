@@ -19,18 +19,15 @@ import br.unitins.repository.EstadoRepository;
 
 @ApplicationScoped
 public class EstadoServiceImpl implements EstadoService {
-   @Inject
+    @Inject
     EstadoRepository estadoRepository;
 
     @Inject
     Validator validator;
-    
+
     @Override
     public List<EstadoResponseDTO> getAll() {
-        return estadoRepository.findAll()
-                                        .stream()
-                                        .map(EstadoResponseDTO::new)
-                                        .collect(Collectors.toList());
+        return estadoRepository.findAll().stream().map(EstadoResponseDTO::new).collect(Collectors.toList());
     }
 
     @Override

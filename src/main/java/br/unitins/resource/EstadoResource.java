@@ -28,7 +28,7 @@ import org.jboss.logging.Logger;
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
 public class EstadoResource {
-   @Inject
+    @Inject
     EstadoService estadoService;
 
     private static final Logger LOG = Logger.getLogger(EstadoResource.class);
@@ -40,6 +40,7 @@ public class EstadoResource {
         LOG.debug("Debug de busca de lista de estados.");
         return estadoService.getAll();
     }
+
     @POST
     @Transactional
     @RolesAllowed({ "Admin", "User" })
@@ -54,9 +55,8 @@ public class EstadoResource {
             LOG.debug(e.getMessage());
             Result result = new Result(e.getConstraintViolations());
             return Response.status(Status.NOT_FOUND).entity(result).build();
-        } 
+        }
     }
-
 
     @PUT
     @RolesAllowed({ "Admin", "User" })
@@ -89,7 +89,7 @@ public class EstadoResource {
             estadoService.delete(id);
             LOG.infof("Estado (%d) apagado com sucesso.");
             return Response.status(Status.NO_CONTENT).build();
-        }  catch (NullPointerException e) {
+        } catch (NullPointerException e) {
             LOG.error("Erro ao apagar uma cidade.");
             LOG.debug(e.getMessage());
             result = new Result(e.getMessage());

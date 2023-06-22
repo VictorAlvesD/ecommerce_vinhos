@@ -13,7 +13,6 @@ import br.unitins.service.EstadoService;
 
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
@@ -30,16 +29,16 @@ public class EstadoResourceTest {
 
     @BeforeEach
     public void setUp() {
-        var auth = new AuthUsuarioDTO("dudadelorusso@gmail.com", "123");
+        var auth = new AuthUsuarioDTO("duda", "123");
 
-        Response response = (Response) given()
+         Response response = (Response) given()
                 .contentType("application/json")
                 .body(auth)
                 .when().post("/auth")
-                .then().statusCode(200)
-                .extract()
-                .response();
-
+                .then()
+                .statusCode(200)
+                .extract().response();
+        
         token = response.header("Authorization");
     }
 
@@ -107,13 +106,13 @@ public class EstadoResourceTest {
                 .statusCode(204);
 
         // verificando se a pessoa fisica foi excluida
-        EstadoResponseDTO EstadoResponse = null;
+        EstadoResponseDTO estadoResponse = null;
         try {
-            EstadoResponse = estadoService.findById(id);
+            estadoResponse = estadoService.findById(id);
         } catch (Exception e) {
 
         } finally {
-            assertNull(EstadoResponse);
+            assertNull(estadoResponse);
         }
     }
 

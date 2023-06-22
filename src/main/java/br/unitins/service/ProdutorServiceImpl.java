@@ -11,12 +11,13 @@ import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Validator;
 import jakarta.ws.rs.NotFoundException;
+import br.unitins.dto.EstadoResponseDTO;
 import br.unitins.dto.PagamentoResponseDTO;
 import br.unitins.dto.ProdutorDTO;
 import br.unitins.dto.ProdutorResponseDTO;
 import br.unitins.model.Produtor;
 import br.unitins.repository.ProdutorRepository;
-/* 
+
 @ApplicationScoped
 public class ProdutorServiceImpl implements ProdutorService {
 
@@ -28,8 +29,10 @@ public class ProdutorServiceImpl implements ProdutorService {
 
    @Override
     public List<ProdutorResponseDTO> getAll() {
-        List<Produtor> list = produtorRepository.listAll();
-        return list.stream().map(u -> ProdutorResponseDTO.valueOf(u)).collect(Collectors.toList()); 
+        return produtorRepository.findAll()
+                                        .stream()
+                                        .map(ProdutorResponseDTO::new)
+                                        .collect(Collectors.toList());
     }
 
     @Override
@@ -95,4 +98,4 @@ public class ProdutorServiceImpl implements ProdutorService {
 
 }
 
-*/
+

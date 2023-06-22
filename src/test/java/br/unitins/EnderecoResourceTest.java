@@ -41,7 +41,7 @@ public class EnderecoResourceTest {
 
         @BeforeEach
         public void setUp() {
-                var auth = new AuthUsuarioDTO("dudadelorusso@gmail.com", "123");
+                var auth = new AuthUsuarioDTO("duda", "123");
 
                 Response response = (Response) given()
                                 .contentType("application/json")

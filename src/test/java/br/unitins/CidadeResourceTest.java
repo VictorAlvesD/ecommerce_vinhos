@@ -13,14 +13,12 @@ import br.unitins.service.CidadeService;
 
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
 import org.junit.jupiter.api.BeforeEach;
 
 import jakarta.inject.Inject;
-import jakarta.ws.rs.core.MediaType;
 
 @QuarkusTest
 public class CidadeResourceTest {
@@ -30,7 +28,7 @@ public class CidadeResourceTest {
 
     @BeforeEach
     public void setUp() {
-        var auth = new AuthUsuarioDTO("dudadelorusso@gmail.com", "123");
+        var auth = new AuthUsuarioDTO("duda", "123");
 
         Response response = (Response) given()
                 .contentType("application/json")
