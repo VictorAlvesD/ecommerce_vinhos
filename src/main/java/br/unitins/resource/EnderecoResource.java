@@ -18,7 +18,6 @@ import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.Response.Status;
 
 import br.unitins.application.Result;
-import br.unitins.dto.CompraResponseDTO;
 import br.unitins.dto.EnderecoDTO;
 import br.unitins.dto.EnderecoResponseDTO;
 import br.unitins.service.EnderecoService;

@@ -17,14 +17,11 @@ import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.Response.Status;
-import org.jboss.logging.Logger;
 
 import br.unitins.application.Result;
 import br.unitins.dto.CompraDTO;
 import br.unitins.dto.CompraResponseDTO;
 import br.unitins.dto.PagamentoResponseDTO;
-import br.unitins.model.Pagamento;
-import br.unitins.service.CompraService;
 import br.unitins.service.PagamentoService;
 
 @Path("/pagamentos")

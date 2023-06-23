@@ -96,6 +96,12 @@ public class ProdutorServiceImpl implements ProdutorService {
         return produtorRepository.count();
     }
 
+    @Override
+    public ProdutorResponseDTO findByLogin(String login) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'findByLogin'");
+    }
+
 }
 
 

@@ -15,6 +15,7 @@ import jakarta.ws.rs.NotFoundException;
 import br.unitins.dto.CidadeDTO;
 import br.unitins.dto.CidadeResponseDTO;
 import br.unitins.model.Cidade;
+import br.unitins.model.Estado;
 import br.unitins.repository.CidadeRepository;
 import br.unitins.repository.EstadoRepository;
 
@@ -50,7 +51,9 @@ public class CidadeServiceImpl implements CidadeService {
 
         Cidade entity = new Cidade();
         entity.setNome(cidadeDTO.nome());
-        entity.setEstado(estadoRepository.findByID(cidadeDTO.estado().longValue()));
+
+        Estado estado = estadoRepository.findById(cidadeDTO.estado());
+        entity.setEstado(estado);
 
         cidadeRepository.persist(entity);
 
@@ -72,7 +75,7 @@ public class CidadeServiceImpl implements CidadeService {
 
         validarId(entity);
         entity.setNome(cidadeDTO.nome());
-        entity.setEstado(estadoRepository.findByID(cidadeDTO.estado().longValue()));
+        entity.setEstado(estadoRepository.findById(cidadeDTO.estado()));
 
         cidadeRepository.persist(entity);
 

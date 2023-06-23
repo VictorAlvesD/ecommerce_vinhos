@@ -12,11 +12,6 @@ public class UsuarioRepository implements PanacheRepository<Usuario>{
             return null;
         return find("cpf LIKE ?1 ", "%" + cpf + "%").list();
     }
-    public Usuario findByID(Integer id) {
-        if (id == null)
-            return null;
-        return  find("id = ?1", id).firstResult();
-    }
 
     public Usuario findByLoginAndSenha(String email, String senha){
         if (email == null || senha == null)

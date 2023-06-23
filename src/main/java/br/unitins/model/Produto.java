@@ -1,21 +1,17 @@
 package br.unitins.model;
 
 import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import jakarta.persistence.MappedSuperclass;
 
-
 @MappedSuperclass
-public class Produto extends DefaultEntity{
+public class Produto extends DefaultEntity {
     @Column(name = "nome")
     private String nome;
     @Column(name = "estoque")
     private int estoque;
     @Column(name = "preco")
     private Double preco;
-    
+    private String nomeImagem;
     private String descricao;
 
     public String getNome() {
@@ -48,6 +44,14 @@ public class Produto extends DefaultEntity{
 
     public void setDescricao(String descricao) {
         this.descricao = descricao;
+    }
+
+    public String getNomeImagem() {
+        return nomeImagem;
+    }
+
+    public void setNomeImagem(String nomeImagem) {
+        this.nomeImagem = nomeImagem;
     }
 
 }

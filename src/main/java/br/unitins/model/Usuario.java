@@ -1,7 +1,5 @@
 package br.unitins.model;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Set;
 
 import jakarta.persistence.CollectionTable;
@@ -9,16 +7,13 @@ import jakarta.persistence.Column;
 import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.JoinTable;
-import jakarta.persistence.ManyToMany;
-import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 
 @Entity
 public class Usuario extends DefaultEntity {
 
     private String nomeImagem;
-    
+
     private String nome;
 
     private String cpf;
@@ -26,7 +21,6 @@ public class Usuario extends DefaultEntity {
     private String senha;
 
     private String email;
-
     @ElementCollection
     @CollectionTable(name = "perfis", joinColumns = @JoinColumn(name = "id_usuario", referencedColumnName = "id"))
     @Column(name = "perfil", length = 30)
@@ -38,9 +32,8 @@ public class Usuario extends DefaultEntity {
     @OneToOne()
     private Endereco endereco;
 
-    @ManyToMany
-    @JoinTable(name = "listadesejos", joinColumns = @JoinColumn(name = "usuario"), inverseJoinColumns = @JoinColumn(name = "vinho"))
-    private List<Vinho> vinhosListaDesejos = new ArrayList<>();
+@OneToOne()
+    private Vinho vinhosListaDesejos;
 
     public Set<Perfil> getPerfil() {
         return perfil;
@@ -90,18 +83,6 @@ public class Usuario extends DefaultEntity {
         this.telefone = telefone;
     }
 
-    public List<Vinho> getVinhosListaDesejos() {
-        return vinhosListaDesejos;
-    }
-
-    public void setVinhosListaDesejos(List<Vinho> vinhosListaDesejos) {
-        this.vinhosListaDesejos = vinhosListaDesejos;
-    }
-
-    public void setPerfil(Set<Perfil> perfil) {
-        this.perfil = perfil;
-    }
-
     public Endereco getEndereco() {
         return endereco;
     }
@@ -121,6 +102,16 @@ public class Usuario extends DefaultEntity {
         this.nomeImagem = nomeImagem;
     }
 
-   
+    public void setPerfil(Set<Perfil> perfil) {
+        this.perfil = perfil;
+    }
+
+    public Vinho getVinhosListaDesejos() {
+        return vinhosListaDesejos;
+    }
+
+    public void setVinhosListaDesejos(Vinho vinhosListaDesejos) {
+        this.vinhosListaDesejos = vinhosListaDesejos;
+    }
 
 }

@@ -15,9 +15,4 @@ public class ProdutorRepository implements PanacheRepository<Produtor> {
             return null;
         return find("UPPER(nome) LIKE ?1 ", "%"+nome.toUpperCase()+"%").list();
     }
-    public Produtor findByID(Integer id) {
-        if (id == null)
-            return null;
-        return  find("id = ?1", id).firstResult();
-    }
 }

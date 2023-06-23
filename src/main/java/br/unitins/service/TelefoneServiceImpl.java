@@ -10,7 +10,6 @@ import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Validator;
 import jakarta.ws.rs.NotFoundException;
-
 import br.unitins.dto.TelefoneDTO;
 import br.unitins.dto.TelefoneResponseDTO;
 import br.unitins.model.Telefone;
@@ -26,8 +25,10 @@ public class TelefoneServiceImpl implements TelefoneService{
 
     @Override
     public List<TelefoneResponseDTO> getAll() {
-        List<Telefone> list = telefoneRepository.listAll();
-        return list.stream().map(TelefoneResponseDTO::new).collect(Collectors.toList());
+        return telefoneRepository.findAll()
+                                        .stream()
+                                        .map(TelefoneResponseDTO::new)
+                                        .collect(Collectors.toList());
     }
 
     @Override

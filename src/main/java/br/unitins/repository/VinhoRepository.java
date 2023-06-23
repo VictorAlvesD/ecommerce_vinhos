@@ -12,9 +12,4 @@ public class VinhoRepository implements PanacheRepository<Vinho>{
             return null;
         return find("UPPER(nome) LIKE ?1 ", "%" + nome.toUpperCase() + "%").list();
     }
-    public Vinho findByID(Integer long1) {
-        if (long1 == null)
-            return null;
-        return  find("id = ?1", long1).firstResult();
-    }
 }

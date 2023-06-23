@@ -1,25 +1,26 @@
 package br.unitins.resource;
 
-import java.io.IOException;
-
-import javax.print.attribute.standard.Media;
-
-import org.eclipse.microprofile.jwt.JsonWebToken;
-import org.jboss.resteasy.annotations.providers.multipart.MultipartForm;
-
-import br.unitins.application.Result;
-import br.unitins.dto.UsuarioResponseDTO;
-import br.unitins.form.ImageForm;
 import br.unitins.service.FileService;
 import br.unitins.service.UsuarioService;
-import jakarta.annotation.security.RolesAllowed;
+
+import org.eclipse.microprofile.jwt.JsonWebToken;
+
+import java.io.IOException;
+
+import br.unitins.application.Result;
+
+import org.jboss.resteasy.annotations.providers.multipart.MultipartForm;
+import br.unitins.dto.UsuarioResponseDTO;
+import br.unitins.form.ImageForm;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.Produces;
+
+import jakarta.annotation.security.RolesAllowed;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.PATCH;
-import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
-import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.Response.ResponseBuilder;
@@ -29,7 +30,6 @@ import jakarta.ws.rs.core.Response.Status;
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
 public class UsuarioLogadoResource {
-
     @Inject
     JsonWebToken jwt;
 
@@ -40,21 +40,20 @@ public class UsuarioLogadoResource {
     FileService fileService;
 
     @GET
-    @RolesAllowed({"Admin","User"})
+    @RolesAllowed({ "Admin", "User" })
     public Response getUsuario() {
-
         // obtendo o login a partir do token
         String login = jwt.getSubject();
-        UsuarioResponseDTO usuario = usuarioService.findByLogin(login);
+        UsuarioResponseDTO UsuarioResponseDTO= usuarioService.findByLogin(login);
 
-        return Response.ok(usuario).build();
+        return Response.ok(UsuarioResponseDTO).build();
     }
 
     @PATCH
     @Path("/novaimagem")
-    @RolesAllowed({"Admin","User"})
+    @RolesAllowed({ "Admin", "User" })
     @Consumes(MediaType.MULTIPART_FORM_DATA)
-    public Response salvarImagem(@MultipartForm ImageForm form){
+    public Response salvarImagem(@MultipartForm ImageForm form) {
         String nomeImagem = "";
 
         try {
@@ -64,24 +63,21 @@ public class UsuarioLogadoResource {
             return Response.status(Status.CONFLICT).entity(result).build();
         }
 
-        // obtendo o login a partir do token
         String login = jwt.getSubject();
-        UsuarioResponseDTO usuario = usuarioService.findByLogin(login);
+        UsuarioResponseDTO cliente = usuarioService.findByLogin(login);
 
-        //usuario = usuarioService.update(usuario.id(), nomeImagem);
+        cliente = usuarioService.update(cliente.id(), nomeImagem);
 
-        return Response.ok(usuario).build();
-
+        return Response.ok(cliente).build();
     }
 
     @GET
     @Path("/download/{nomeImagem}")
-    @RolesAllowed({"Admin","User"})
+    @RolesAllowed({ "Admin", "User" })
     @Produces(MediaType.APPLICATION_OCTET_STREAM)
     public Response download(@PathParam("nomeImagem") String nomeImagem) {
         ResponseBuilder response = Response.ok(fileService.download(nomeImagem));
-        response.header("Content-Disposition", "attachment;filename="+nomeImagem);
+        response.header("Content-Disposition", "attachment;filename=" + nomeImagem);
         return response.build();
     }
-    
 }

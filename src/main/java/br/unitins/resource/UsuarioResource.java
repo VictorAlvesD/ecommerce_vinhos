@@ -2,9 +2,9 @@ package br.unitins.resource;
 
 import java.util.List;
 
-import jakarta.annotation.security.PermitAll;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.DELETE;
@@ -30,17 +30,55 @@ import br.unitins.service.UsuarioService;
 public class UsuarioResource {
     @Inject
     UsuarioService usuarioService;
-private static final Logger LOG = Logger.getLogger(CidadeResource.class);
+
+    private static final Logger LOG = Logger.getLogger(CidadeResource.class);
+
     @GET
-    @RolesAllowed({"Admin", "User"})
+    @RolesAllowed({ "Admin", "User" })
     public List<UsuarioResponseDTO> getAll() {
         LOG.info("Buscando todos os cidades.");
         LOG.debug("ERRO DE DEBUG.");
         return usuarioService.getAll();
     }
 
+    @POST
+    @Transactional
+    @RolesAllowed({ "Admin" })
+    public Response insert(UsuarioDTO usuarioDTO) {
+        LOG.info("Inserindo um cliente.");
+        try {
+            UsuarioResponseDTO usuario = usuarioService.insert(usuarioDTO);
+            return Response.status(Status.CREATED).entity(usuario).build();
+        } catch (ConstraintViolationException e) {
+            Result result = new Result(e.getConstraintViolations());
+            LOG.debug("Debug de inserção de clientes.");
+            return Response.status(Status.NOT_FOUND).entity(result).build();
+        }
+    }
+
+    @PUT
+    @Path("/{id}")
+    @RolesAllowed({ "Admin" })
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    @Transactional
+    public Response update(@PathParam("id") Long id, UsuarioDTO dto) {
+        LOG.infof("Atualiza um cliente: %s", dto.getClass());
+        Result result = null;
+        try {
+            UsuarioResponseDTO usuario = usuarioService.update(id, dto);
+            LOG.infof("Usuario (%d) atualizado com sucesso.", usuario.id());
+            return Response.noContent().build();
+        } catch (ConstraintViolationException e) {
+            result = new Result(e.getConstraintViolations());
+            LOG.debug("Debug de update de usuario.");
+            return Response.status(Status.NOT_FOUND).entity(result).build();
+        }
+        
+    }
+
     @DELETE
-    @RolesAllowed({"Admin", "User"})
+    @RolesAllowed({ "Admin", "User" })
     @Path("/{id}")
     public Response delete(@PathParam("id") Long id) {
         Result result = null;
@@ -57,24 +95,17 @@ private static final Logger LOG = Logger.getLogger(CidadeResource.class);
     }
 
     @GET
-    @RolesAllowed({"Admin", "User"})
+    @RolesAllowed({ "Admin", "User" })
     @Path("/{id}")
     public UsuarioResponseDTO findById(@PathParam("id") Long id) {
         return usuarioService.findById(id);
     }
-    
+
     @GET
-    @RolesAllowed({"Admin", "User"})
+    @RolesAllowed({ "Admin", "User" })
     @Path("/count")
     public long count() {
         return usuarioService.count();
     }
 
-    @GET
-    @RolesAllowed({"Admin", "User"})
-    @Path("/search/{cpf}")
-    public List<UsuarioResponseDTO> search(@PathParam("cpf") String cpf) {
-        return usuarioService.findByCpf(cpf);
-    }
-    
 }

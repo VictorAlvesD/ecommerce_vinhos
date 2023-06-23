@@ -14,11 +14,7 @@ public class EstadoRepository implements PanacheRepository<Estado> {
             return null;
         return find("UPPER(nome) LIKE ?1 ", "%" + sigla.toUpperCase() + "%").list();
     }
-    public Estado findByID(Long integer) {
-        if (integer == null)
-            return null;
-        return  find("id = ?1", integer).firstResult();
-    }
+    
     public Cidade findById(Integer cidade) {
         return null;
     }

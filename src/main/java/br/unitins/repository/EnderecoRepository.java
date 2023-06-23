@@ -12,10 +12,4 @@ public class EnderecoRepository implements PanacheRepository<Endereco> {
             return null;
         return find("UPPER(cep) LIKE ?1 ", "%" + cep.toUpperCase() + "%").list();
     }
-
-    public List<Endereco> findById(Integer id) {
-        if (id == null)
-            return null;
-        return find("id = ?1", id).firstResult();
-    }
 }

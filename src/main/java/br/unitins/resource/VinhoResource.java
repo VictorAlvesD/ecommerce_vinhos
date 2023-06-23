@@ -42,14 +42,14 @@ public class VinhoResource {
     @POST
     @RolesAllowed({ "Admin", "User" })
     public Response insert(VinhoDTO dto) {
-        LOG.infof("Inserindo uma cidade: %s", dto.getClass());
+        LOG.infof("Inserindo uma vinho: %s", dto.getClass());
         Result result = null;
         try {
             VinhoResponseDTO vinho = vinhoService.insert(dto);
-            LOG.infof("Cidade (%d) criado com sucesso.", vinho.id());
+            LOG.infof("Vinho (%d) criado com sucesso.", vinho.id());
             return Response.status(Status.CREATED).entity(vinho).build();
         } catch (ConstraintViolationException e) {
-            LOG.error("Erro ao incluir uma cidade.");
+            LOG.error("Erro ao incluir um vinho.");
             LOG.debug(e.getMessage());
             result = new Result(e.getConstraintViolations());
         } catch (Exception e) {

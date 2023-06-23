@@ -6,8 +6,10 @@ import br.unitins.dto.ProdutorDTO;
 import br.unitins.dto.ProdutorResponseDTO;
 
 public interface ProdutorService {
-   
+
     List<ProdutorResponseDTO> getAll();
+
+    ProdutorResponseDTO findByLogin(String login);
 
     ProdutorResponseDTO findById(Long id);
 

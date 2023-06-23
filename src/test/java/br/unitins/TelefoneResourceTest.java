@@ -23,7 +23,7 @@ import jakarta.inject.Inject;
 @QuarkusTest
 public class TelefoneResourceTest {
     @Inject
-    TelefoneService enderecoService;
+    TelefoneService telefoneService;
     private String token;
 
     @BeforeEach
@@ -52,12 +52,12 @@ public class TelefoneResourceTest {
 
     @Test
     public void insertTelefoneTest() {
-        TelefoneDTO endereco = new TelefoneDTO("(63)", "99999-0044");
+        TelefoneDTO telefoneDTO = new TelefoneDTO("(63)", "99999-0044");
 
         given()
         .header("Authorization", "Bearer " + token)
                 .contentType(ContentType.JSON)
-                .body(endereco)
+                .body(telefoneDTO)
                 .when().post("/telefones")
                 .then()
                 .statusCode(201);
@@ -66,24 +66,24 @@ public class TelefoneResourceTest {
     @Test
     public void testUpdate() {
         // Adicionando uma endereco no banco de dados
-        TelefoneDTO endereco = new TelefoneDTO(
+        TelefoneDTO telefoneDTO = new TelefoneDTO(
                 "(63)", "99999-0044");
-        Long id = enderecoService.insert(endereco).id();
+        Long id = telefoneService.insert(telefoneDTO).id();
 
         // Criando outro endereco para atuailzacao
-        TelefoneDTO enderecoUpdate = new TelefoneDTO(
+        TelefoneDTO telefoneUpdate = new TelefoneDTO(
                 "(63)", "99999-0044");
 
         given()
         .header("Authorization", "Bearer " + token)
                 .contentType(ContentType.JSON)
-                .body(enderecoUpdate)
+                .body(telefoneUpdate)
                 .when().put("/telefones/" + id)
                 .then()
                 .statusCode(204);
 
         // Verificando se os dados foram atualizados no banco de dados
-        TelefoneResponseDTO enderecoResponse = enderecoService.findById(id);
+        TelefoneResponseDTO enderecoResponse = telefoneService.findById(id);
         assertThat(enderecoResponse.codigoArea(), is("(63)"));
         assertThat(enderecoResponse.numero(), is("99999-0044"));
     }
@@ -93,7 +93,7 @@ public class TelefoneResourceTest {
         // Adicionando um endereco no banco de dados
         TelefoneDTO endereco = new TelefoneDTO(
                 "(63)", "99999-0044");
-        Long id = enderecoService.insert(endereco).id();
+        Long id = telefoneService.insert(endereco).id();
 
         given()
         .header("Authorization", "Bearer " + token)
@@ -102,13 +102,13 @@ public class TelefoneResourceTest {
                 .statusCode(204);
 
         // verificando se a pessoa fisica foi excluida
-        TelefoneResponseDTO enderecoResponse = null;
+        TelefoneResponseDTO telefoneResponse = null;
         try {
-            enderecoResponse = enderecoService.findById(id);
+            telefoneResponse = telefoneService.findById(id);
         } catch (Exception e) {
 
         } finally {
-            assertNull(enderecoResponse);
+            assertNull(telefoneResponse);
         }
     }
 

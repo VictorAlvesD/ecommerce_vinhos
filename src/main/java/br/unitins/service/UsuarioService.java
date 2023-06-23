@@ -13,11 +13,15 @@ public interface UsuarioService {
     
     UsuarioResponseDTO findById(Long id);
 
-    List<UsuarioResponseDTO> findByCpf(String cpf);
+    UsuarioResponseDTO insert(UsuarioDTO usuarioDTO);
+
+    UsuarioResponseDTO update(Long id, UsuarioDTO usuarioDTO);
+
+    UsuarioResponseDTO update(Long id, String nomeImagem);
+
+    UsuarioResponseDTO findByLogin(String login);
 
     public Usuario findByLoginAndSenha(String email, String senha);
-
-    public UsuarioResponseDTO findByLogin(String email);
 
     long count();
 }

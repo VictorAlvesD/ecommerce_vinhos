@@ -10,7 +10,8 @@ public record VinhoResponseDTO(
         Double preco,
         String teorAlcoolico,
         String tipoUva,
-        TipoVinho tipoVinho) {
+        TipoVinho tipoVinho,
+        String nomeImagem) {
 
     public VinhoResponseDTO(Vinho vinho) {
         this(
@@ -20,7 +21,8 @@ public record VinhoResponseDTO(
                 vinho.getPreco(),
                 vinho.getTeorAlcoolico(),
                 vinho.getTipoUva(),
-                vinho.getTipoVinho()
+                vinho.getTipoVinho(),
+                vinho.getNomeImagem()
                 );
 
     }

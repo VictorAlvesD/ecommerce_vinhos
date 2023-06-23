@@ -14,10 +14,7 @@ import jakarta.enterprise.context.ApplicationScoped;
 @ApplicationScoped
 public class FileServiceImpl implements FileService {
     // ex. /user/janio/quarkus/images/usuario/
-    private final String PATH_USER = System.getProperty("user.home")
-        + File.separator + "quarkus"
-        + File.separator + "images"
-        + File.separator + "usuario" + File.separator;
+    private final String PATH_USER = "C:\\Users\\victo\\OneDrive\\Documentos\\TOPICOS 1\\ecommerce_vinhos\\src\\main\\resources\\imagens\\";
 
     @Override
     public String salvarImagemUsuario(byte[] imagem, String nomeImagem) throws IOException {
@@ -46,7 +43,6 @@ public class FileServiceImpl implements FileService {
 
         // salvando o arquivo
         File file = new File(path);
-        // alunos (melhorar :)
         if (file.exists())
             throw new IOException("O nome gerado da imagem está repedido.");
 

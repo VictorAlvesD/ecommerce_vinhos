@@ -1,7 +1,5 @@
 package br.unitins.dto;
 
-import java.util.List;
-
 import jakarta.validation.constraints.NotBlank;
 
 public record CompraDTO(

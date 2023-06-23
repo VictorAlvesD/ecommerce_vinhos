@@ -1,25 +1,15 @@
 package br.unitins.model;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.PrimaryKeyJoinColumn;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
 
 @Entity
 @PrimaryKeyJoinColumn(name = "id")
 public class Vinho extends Produto {
-    @ManyToMany(mappedBy = "vinhosListaDesejos")
-    @JsonIgnore
-    private List<Usuario> usuariosListaDesejos = new ArrayList<>();
     private String teorAlcoolico;
     private String tipoUva;
     private String descricao;
@@ -79,14 +69,6 @@ public class Vinho extends Produto {
 
     public void setProdutor(Produtor produtor) {
         this.produtor = produtor;
-    }
-
-    public List<Usuario> getUsuariosListaDesejos() {
-        return usuariosListaDesejos;
-    }
-
-    public void setUsuariosListaDesejos(List<Usuario> usuariosListaDesejos) {
-        this.usuariosListaDesejos = usuariosListaDesejos;
     }
 
 }
