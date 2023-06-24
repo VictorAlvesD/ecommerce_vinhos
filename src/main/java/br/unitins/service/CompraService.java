@@ -4,15 +4,16 @@ import br.unitins.dto.CompraDTO;
 import br.unitins.dto.CompraResponseDTO;
 
 public interface CompraService {
-    List<CompraResponseDTO> getAll();
+   List<CompraResponseDTO> getAll();
 
     CompraResponseDTO findById(Long id);
 
-    CompraResponseDTO insert(CompraDTO compraDTO);
+    CompraResponseDTO create(CompraDTO compradto);
 
-    CompraResponseDTO update(Long id, CompraDTO compraDTO);
+    CompraResponseDTO update(Long id, CompraDTO compradto);
 
     void delete(Long id);
 
-    // Outros métodos específicos, se necessário
+
+    Long count();
 }

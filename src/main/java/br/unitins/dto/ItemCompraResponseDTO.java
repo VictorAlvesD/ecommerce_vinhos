@@ -5,17 +5,12 @@ import java.time.LocalDate;
 import br.unitins.model.ItemCompra;
 
 public record ItemCompraResponseDTO(
+    Long id,
     int quantidade,
     LocalDate dataCompra
 ) {
-    public static ItemCompraResponseDTO valueOf(ItemCompra itemCompra) {
-        if (itemCompra == null)
-            return null;
-
-        return new ItemCompraResponseDTO(
-            itemCompra.getQuantidade(),
-            itemCompra.getDataCompra()
-        );
+    public  ItemCompraResponseDTO (ItemCompra itemCompra) {
+        this(itemCompra.getId(), itemCompra.getQuantidade(), itemCompra.getDataCompra());
     }
 }
 

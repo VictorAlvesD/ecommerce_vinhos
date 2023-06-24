@@ -14,19 +14,19 @@ import jakarta.ws.rs.NotFoundException;
 
 import br.unitins.dto.CompraDTO;
 import br.unitins.dto.CompraResponseDTO;
-import br.unitins.dto.ItemCompraResponseDTO;
-import br.unitins.dto.PagamentoResponseDTO;
 import br.unitins.model.Compra;
-import br.unitins.model.ItemCompra;
-import br.unitins.model.StatusPagamento;
-import br.unitins.model.TipoPagamento;
+import br.unitins.model.Usuario;
 import br.unitins.repository.CompraRepository;
+import br.unitins.repository.UsuarioRepository;
 
 @ApplicationScoped
 public class CompraServiceImpl implements CompraService {
 
-    @Inject
+     @Inject
     CompraRepository compraRepository;
+
+    @Inject
+    UsuarioRepository usuarioRepository;
 
     @Inject
     Validator validator;
@@ -34,64 +34,68 @@ public class CompraServiceImpl implements CompraService {
     @Override
     public List<CompraResponseDTO> getAll() {
         List<Compra> list = compraRepository.listAll();
-        return list.stream()
-            .map(u -> CompraResponseDTO.valueOf(u))
-            .collect(Collectors.toList());
+        return list.stream().map(CompraResponseDTO::new).collect(Collectors.toList());
     }
 
     @Override
     public CompraResponseDTO findById(Long id) {
         Compra compra = compraRepository.findById(id);
         if (compra == null)
-            throw new NotFoundException("Compra não encontrada!");
-        return CompraResponseDTO.valueOf(compra);
+            return null;
+        return new CompraResponseDTO(compra);
     }
 
-    private void validarId(Compra compra) throws ConstraintViolationException {
-        if (compra.getId() == null)
-            throw new NullPointerException("Id inválido");
-    }
-
-    @Override
-    @Transactional
-    public CompraResponseDTO insert(CompraDTO compraDTO) throws ConstraintViolationException {
-        validar(compraDTO);
-
-        Compra entity = new Compra();
-        entity.setStatus(StatusPagamento.valueOf(compraDTO.statusPagamento()));
-        entity.setTipo(TipoPagamento.valueOf(compraDTO.tipoPagamento()));
-
-        compraRepository.persist(entity);
-
-        return CompraResponseDTO.valueOf(entity);
-    }
-
-    private void validar(CompraDTO compraDTO) throws ConstraintViolationException {
-        Set<ConstraintViolation<CompraDTO>> violations = validator.validate(compraDTO);
+    private void validar(CompraDTO compradto) throws ConstraintViolationException {
+        Set<ConstraintViolation<CompraDTO>> violations = validator.validate(compradto);
         if (!violations.isEmpty())
             throw new ConstraintViolationException(violations);
     }
 
     @Override
     @Transactional
-    public CompraResponseDTO update(Long id, CompraDTO compraDTO) throws ConstraintViolationException {
+    public CompraResponseDTO create(CompraDTO compraDTO) throws ConstraintViolationException {
         validar(compraDTO);
 
-        Compra entity = compraRepository.findById(id);
-        if (entity == null)
-            throw new NotFoundException("Compra não encontrada!");
+        Compra entity = new Compra();
+        entity.setData(compraDTO.data());
+        entity.setTotalCompra(compraDTO.totalCompra());
 
-        entity.setStatus(StatusPagamento.valueOf(compraDTO.statusPagamento()));
-        entity.setTipo(TipoPagamento.valueOf(compraDTO.tipoPagamento()));
+        Usuario usuario = usuarioRepository.findById(compraDTO.usuario());
+        entity.setUsuario(usuario);
 
-        return CompraResponseDTO.valueOf(entity);
+        compraRepository.persist(entity);
+        
+        return new CompraResponseDTO(entity);
+    }
+
+    @Override
+    @Transactional
+    public CompraResponseDTO update(Long id, CompraDTO compradto) {
+        Compra compraUpdate = compraRepository.findById(id);
+        if (compraUpdate == null)
+            throw new NotFoundException("Compra não encontrada.");
+        validar(compradto);
+
+        compraUpdate.setData(compradto.data());
+        compraUpdate.setTotalCompra(compradto.totalCompra());
+
+        Usuario usuario = usuarioRepository.findById(compradto.usuario().longValue());
+        compraUpdate.setUsuario(usuario);
+
+        compraRepository.persist(compraUpdate);
+        return new CompraResponseDTO(compraUpdate);
+    }
+
+    @Override
+    @Transactional
+    public void delete(Long id) {
+        compraRepository.deleteById(id);
     }
 
 
     @Override
-    public void delete(Long id) {
-        Compra compra = compraRepository.findById(id);
-        validarId(compra);
-        compraRepository.delete(compra);
+    public Long count() {
+        return compraRepository.count();
     }
+
 }

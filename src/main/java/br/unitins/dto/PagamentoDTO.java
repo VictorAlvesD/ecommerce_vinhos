@@ -1,14 +1,13 @@
 package br.unitins.dto;
 
+import br.unitins.model.Compra;
 import jakarta.validation.constraints.NotBlank;
 
 public record PagamentoDTO(
-    String statusPagamento,
-    @NotBlank(message = "O campo tipo de pagamento deve ser informado.")
-    String tipoPagamento,
-    @NotBlank(message = "O campo quantidade de parcelas deve ser informado.")
-    int quantidadeParcelas,
-    float valorParcelas
+    @NotBlank
+    String valor,
+    @NotBlank
+    Compra compra
 ) {
 }
 

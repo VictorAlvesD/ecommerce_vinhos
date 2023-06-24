@@ -12,5 +12,5 @@ public record VinhoDTO(
         @NotBlank(message = "O tipo uva deve ser informada.") String tipoUva,
         @NotBlank(message = "A descricao deve ser informada.") String descricao,
         Integer tipoVinho,
-        Integer produtor) {
+        Integer idprodutor) {
 }

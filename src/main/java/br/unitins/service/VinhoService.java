@@ -4,6 +4,7 @@ import java.util.List;
 
 import br.unitins.dto.VinhoDTO;
 import br.unitins.dto.VinhoResponseDTO;
+import br.unitins.model.Vinho;
 
 public interface VinhoService {
     List<VinhoResponseDTO> getAll();
@@ -19,4 +20,7 @@ public interface VinhoService {
     List<VinhoResponseDTO> findByNome(String nome);
 
     long count();
+
+    Vinho alterarImagem(Long id, String nomeImagem);
+
 }

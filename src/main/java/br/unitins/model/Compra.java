@@ -1,33 +1,46 @@
 package br.unitins.model;
 
-import br.unitins.model.Pagamento;
+import java.time.LocalDate;
+
 import jakarta.persistence.Entity;
-import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
 
 @Entity
 public class Compra extends DefaultEntity {
 
-    @ManyToOne
-    @JoinColumn(name = "usuario_id")
+    private LocalDate data;
+    private Double totalCompra;
+
+    @OneToOne
+    private ItemCompra itemCompra;
+
+    @OneToOne
     private Usuario usuario;
 
-    @ManyToOne
-    @JoinColumn(name = "endereco_id")
-    private Endereco endereco;
+    public LocalDate getData() {
+        return data;
+    }
 
-    @OneToOne
-    @JoinColumn(name = "item")
-    private ItemCompra itens;
+    public void setData(LocalDate data) {
+        this.data = data;
+    }
 
-    @OneToOne
-    @JoinColumn(name = "pagamento_id")
-    private Pagamento pagamento;
+    public Double getTotalCompra() {
+        return totalCompra;
+    }
 
-    private StatusPagamento status;
+    public void setTotalCompra(Double totalCompra) {
+        this.totalCompra = totalCompra;
+    }
 
-    private TipoPagamento tipo;
+    public ItemCompra getItemCompra() {
+        return itemCompra;
+    }
+
+    public void setItemCompra(ItemCompra itemCompra) {
+        this.itemCompra = itemCompra;
+    }
 
     public Usuario getUsuario() {
         return usuario;
@@ -37,44 +50,6 @@ public class Compra extends DefaultEntity {
         this.usuario = usuario;
     }
 
-    public Endereco getEndereco() {
-        return endereco;
-    }
-
-    public void setEndereco(Endereco endereco) {
-        this.endereco = endereco;
-    }
-
-    public Pagamento getPagamento() {
-        return pagamento;
-    }
-
-    public void setPagamento(Pagamento pagamento) {
-        this.pagamento = pagamento;
-    }
-
-    public StatusPagamento getStatus() {
-        return status;
-    }
-
-    public void setStatus(StatusPagamento status) {
-        this.status = status;
-    }
-
-    public TipoPagamento getTipo() {
-        return tipo;
-    }
-
-    public void setTipo(TipoPagamento tipo) {
-        this.tipo = tipo;
-    }
-
-    public ItemCompra getItens() {
-        return itens;
-    }
-
-    public void setItens(ItemCompra itens) {
-        this.itens = itens;
-    }
+    
 
 }

@@ -57,7 +57,7 @@ public class VinhoServiceImpl implements VinhoService{
         entity.setTipoUva(vinhoDTO.tipoUva());
         entity.setDescricao(vinhoDTO.descricao());
         entity.setTipoVinho(TipoVinho.valueOf(vinhoDTO.tipoVinho()));
-        entity.setProdutor(produtorRepository.findById(vinhoDTO.produtor().longValue()));
+        entity.setProdutor(produtorRepository.findById(vinhoDTO.idprodutor().longValue()));
 
         vinhoRepository.persist(entity);
 
@@ -78,7 +78,7 @@ public class VinhoServiceImpl implements VinhoService{
         entity.setTipoUva(vinhoDTO.tipoUva());
         entity.setDescricao(vinhoDTO.descricao());
         entity.setTipoVinho(TipoVinho.valueOf(vinhoDTO.tipoVinho()));
-        entity.setProdutor(produtorRepository.findById(vinhoDTO.produtor().longValue()));
+        entity.setProdutor(produtorRepository.findById(vinhoDTO.idprodutor().longValue()));
 
         return new VinhoResponseDTO(entity);
     }
@@ -108,6 +108,12 @@ public class VinhoServiceImpl implements VinhoService{
     @Override
     public long count() {
         return vinhoRepository.count();
+    }
+
+    @Override
+    public Vinho alterarImagem(Long id, String nomeImagem) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'alterarImagem'");
     }
 
 }

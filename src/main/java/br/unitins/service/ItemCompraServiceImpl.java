@@ -33,7 +33,7 @@ public class ItemCompraServiceImpl implements ItemCompraService {
     @Override
     public List<ItemCompraResponseDTO> getAll() {
         List<ItemCompra> list = itemCompraRepository.listAll();
-        return list.stream().map(ItemCompraResponseDTO::valueOf).collect(Collectors.toList());
+        return list.stream().map(ItemCompraResponseDTO::new).collect(Collectors.toList());
     }
 
     @Override
@@ -41,7 +41,7 @@ public class ItemCompraServiceImpl implements ItemCompraService {
         ItemCompra itemCompra = itemCompraRepository.findById(id);
         if (itemCompra == null)
             throw new NotFoundException("Item Compra não encontrado!");
-        return ItemCompraResponseDTO.valueOf(itemCompra);
+        return new ItemCompraResponseDTO(itemCompra);
     }
 
     private void validarId(ItemCompra itemCompra) throws ConstraintViolationException {
@@ -56,11 +56,11 @@ public class ItemCompraServiceImpl implements ItemCompraService {
 
         ItemCompra entity = new ItemCompra();
         entity.setQuantidade(itemCompraDTO.quantidade());
-        entity.setProduto(produtoRepository.findById(itemCompraDTO.produto().getId()));
+        entity.setProduto(produtoRepository.findById(itemCompraDTO.produto()));
         entity.setDataCompra(LocalDateTime.now());
         itemCompraRepository.persist(entity);
 
-        return ItemCompraResponseDTO.valueOf(entity);
+        return new ItemCompraResponseDTO(entity);
     }
 
     private void validar(ItemCompraDTO itemCompraDTO) throws ConstraintViolationException {
@@ -78,11 +78,11 @@ public class ItemCompraServiceImpl implements ItemCompraService {
             throw new NotFoundException("Item Compra não encontrado!");
         
         entity.setQuantidade(itemCompraDTO.quantidade());
-        entity.setProduto(produtoRepository.findById(itemCompraDTO.produto().getId()));
+        entity.setProduto(produtoRepository.findById(itemCompraDTO.produto()));
         entity.setDataCompra(LocalDateTime.now());
         itemCompraRepository.persist(entity);
 
-        return ItemCompraResponseDTO.valueOf(entity);
+        return new ItemCompraResponseDTO(entity);
     }
 
     @Override

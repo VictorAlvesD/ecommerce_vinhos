@@ -21,38 +21,67 @@ import jakarta.ws.rs.core.Response.Status;
 import br.unitins.application.Result;
 import br.unitins.dto.CompraDTO;
 import br.unitins.dto.CompraResponseDTO;
+import br.unitins.dto.UsuarioResponseDTO;
 import br.unitins.service.CompraService;
+import br.unitins.service.UsuarioService;
+
+import org.eclipse.microprofile.jwt.JsonWebToken;
 import org.jboss.logging.Logger;
 @Path("/compras")
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
 public class CompraResouce {
-    @Inject
+     @Inject
     CompraService compraService;
 
-    private static final Logger LOG = Logger.getLogger(CidadeResource.class);
+    @Inject
+    JsonWebToken jwt;
+
+    @Inject
+    UsuarioService usuarioService;
+
+    private static final Logger LOG = Logger.getLogger(CompraResouce.class);
 
     @GET
-    @RolesAllowed({"Admin", "User"})
+    @RolesAllowed({ "Admin", "User" })
+    public Response getUsuario() {
+
+        // obtendo o login a partir do token
+        String login = jwt.getSubject();
+        UsuarioResponseDTO usuario = usuarioService.findByLogin(login);
+
+        return Response.ok(usuario).build();
+    }
+
+    @GET
+    @RolesAllowed({ "Admin" })
     public List<CompraResponseDTO> getAll() {
         LOG.info("Buscando todas as compras.");
         LOG.debug("ERRO DE DEBUG.");
         return compraService.getAll();
     }
 
+    @GET
+    @Path("/{id}")
+    @RolesAllowed({ "Admin" })
+    public CompraResponseDTO findById(@PathParam("id") Long id) {
+        return compraService.findById(id);
+    }
+
     @POST
-    @RolesAllowed({"Admin", "User"})
-    public Response insert(CompraDTO dto) {
-        LOG.infof("Inserindo uma compra: %s", dto.getClass());
+    @RolesAllowed({ "Admin" })
+    public Response insert(CompraDTO compradto) {
+        LOG.infof("Inserindo uma compra: %s", compradto.getClass());
         Result result = null;
         try {
-            CompraResponseDTO compra = compraService.insert(dto);
+            CompraResponseDTO compra = compraService.create(compradto);
+            LOG.infof("Compra (%d) criada com sucesso.", compra.id());
             return Response.status(Status.CREATED).entity(compra).build();
         } catch (ConstraintViolationException e) {
-            LOG.error("Erro ao incluir uma cidade.");
+            LOG.error("Erro ao incluir uma compra.");
             LOG.debug(e.getMessage());
             result = new Result(e.getConstraintViolations());
-        }catch (Exception e) {
+        } catch (Exception e) {
             LOG.fatal("Erro sem identificacao: " + e.getMessage());
             result = new Result(e.getMessage(), false);
         }
@@ -60,43 +89,49 @@ public class CompraResouce {
     }
 
     @PUT
-    @RolesAllowed({"Admin", "User"})
     @Path("/{id}")
-    public Response update(@PathParam("id") Long id, CompraDTO dto) {
-        LOG.infof("Atualizando um brinquedo: %s", dto.getClass());
+    @RolesAllowed({ "Admin" })
+    public Response update(@PathParam("id") Long id, CompraDTO compradto) {
+        LOG.infof("Atualizando uma compra: %s", compradto.getClass());
         Result result = null;
         try {
-            CompraResponseDTO compra = compraService.update(id, dto);
-            LOG.infof("Brinquedo (%d) apagado com sucesso.", compra.getClass());
-            return Response.noContent().build();
+            CompraResponseDTO compra = compraService.update(id, compradto);
+            LOG.infof("Compra (%d) atualizada com sucesso.", compra.id());
+            return Response.status(Status.NO_CONTENT).entity(compra).build();
         } catch (ConstraintViolationException e) {
-             LOG.error("Erro ao apagar um brinquedo.");
+            LOG.error("Erro ao atualizar uma compra.");
             LOG.debug(e.getMessage());
-            return Response.status(Response.Status.NOT_FOUND).entity(result).build();
+            result = new Result(e.getConstraintViolations());
         } catch (Exception e) {
             LOG.fatal("Erro sem identificacao: " + e.getMessage());
             result = new Result(e.getMessage(), false);
         }
-        return Response.status(Response.Status.NOT_FOUND).entity(result).build();
+        return Response.status(Status.NOT_FOUND).entity(result).build();
     }
-    
+
     @DELETE
-    @RolesAllowed({"Admin", "User"})
     @Path("/{id}")
+    @RolesAllowed({ "Admin" })
     public Response delete(@PathParam("id") Long id) {
-        try {
-            compraService.delete(id);
-        return Response.status(Status.NO_CONTENT).build();
-        } catch (NullPointerException e) {
-            Result result = new Result(e.getMessage());
-            return Response.status(Status.NOT_FOUND).entity(result).build();
-        }
+        compraService.delete(id);
+        return Response
+                .status(Status.NO_CONTENT)
+                .build();
+
     }
 
     @GET
-    @RolesAllowed({"Admin", "User"})
-    @Path("/{id}")
-    public CompraResponseDTO findById(@PathParam("id") Long id) {
+    @Path("/search/{id}")
+    @RolesAllowed({ "Admin" })
+    public CompraResponseDTO searchId(@PathParam("id") Long id) {
         return compraService.findById(id);
+    }
+
+
+    @GET
+    @Path("/count")
+    @RolesAllowed({ "Admin" })
+    public long count() {
+        return compraService.count();
     }
 }

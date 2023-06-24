@@ -2,6 +2,8 @@
 package br.unitins.resource;
 
 import java.util.List;
+
+import org.eclipse.microprofile.jwt.JsonWebToken;
 import org.jboss.logging.Logger;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
@@ -19,10 +21,11 @@ import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.Response.Status;
 
 import br.unitins.application.Result;
-import br.unitins.dto.CompraDTO;
-import br.unitins.dto.CompraResponseDTO;
+import br.unitins.dto.PagamentoDTO;
 import br.unitins.dto.PagamentoResponseDTO;
+import br.unitins.dto.UsuarioResponseDTO;
 import br.unitins.service.PagamentoService;
+import br.unitins.service.UsuarioService;
 
 @Path("/pagamentos")
 @Consumes(MediaType.APPLICATION_JSON)
@@ -31,29 +34,55 @@ public class PagamentoResource {
     @Inject
     PagamentoService pagamentoService;
 
-    private static final Logger LOG = Logger.getLogger(CidadeResource.class);
+    @Inject
+    JsonWebToken jwt;
+
+    @Inject
+    UsuarioService usuarioService;
+
+    private static final Logger LOG = Logger.getLogger(PagamentoResource.class);
 
     @GET
-    @RolesAllowed({"Admin", "User"})
+    @RolesAllowed({ "Admin", "User" })
+    public Response getUsuario() {
+
+        // obtendo o login a partir do token
+        String login = jwt.getSubject();
+        UsuarioResponseDTO usuario = usuarioService.findByLogin(login);
+
+        return Response.ok(usuario).build();
+    }
+
+    @GET
+    @RolesAllowed({ "Admin" })
     public List<PagamentoResponseDTO> getAll() {
-        LOG.info("Buscando todas as compras.");
+        LOG.info("Buscando todos os pagamentos.");
         LOG.debug("ERRO DE DEBUG.");
         return pagamentoService.getAll();
+
+    }
+
+    @GET
+    @Path("/{id}")
+    @RolesAllowed({ "Admin" })
+    public PagamentoResponseDTO findById(@PathParam("id") Long id) {
+        return pagamentoService.findById(id);
     }
 
     @POST
-    @RolesAllowed({"Admin", "User"})
-    public Response insert(CompraDTO dto) {
-        LOG.infof("Inserindo um brinquedo: %s", dto.getClass());
+    @RolesAllowed({ "Admin" })
+    public Response insert(PagamentoDTO pagamentoDTO) {
+        LOG.infof("Inserindo um pagamento: %s", pagamentoDTO.valor(), pagamentoDTO.compra());
         Result result = null;
         try {
-            CompraResponseDTO pagamento = pagamentoService.insert(dto);
-            LOG.infof("Pagamento (%d) criado com sucesso.", pagamento.id());
+            PagamentoResponseDTO pagamento = pagamentoService.create(pagamentoDTO);
+            LOG.infof("pagamento (%d) criado com sucesso.", pagamento.id());
             return Response.status(Status.CREATED).entity(pagamento).build();
         } catch (ConstraintViolationException e) {
-            LOG.error("Erro ao incluir um brinquedo.");
+            LOG.error("Erro ao incluir um pagamento.");
             LOG.debug(e.getMessage());
-        }catch (Exception e) {
+            result = new Result(e.getConstraintViolations());
+        } catch (Exception e) {
             LOG.fatal("Erro sem identificacao: " + e.getMessage());
             result = new Result(e.getMessage(), false);
         }
@@ -61,38 +90,55 @@ public class PagamentoResource {
     }
 
     @PUT
-    @RolesAllowed({"Admin", "User"})
     @Path("/{id}")
-    public Response update(@PathParam("id") Long id, CompraDTO dto) {
-        try {
-            CompraResponseDTO pagamento = pagamentoService.update(id, dto);
-            return Response.noContent().build();
-        } catch (ConstraintViolationException e) {
-            Result result = new Result(e.getConstraintViolations());
-            return Response.status(Response.Status.NOT_FOUND).entity(result).build();
-        } catch (NullPointerException e) {
-            Result result = new Result(e.getMessage());
-            return Response.status(Response.Status.NOT_FOUND).entity(result).build();
-        }
-    }
-    
-    @DELETE
-    @RolesAllowed({"Admin", "User"})
-    @Path("/{id}")
-    public Response delete(@PathParam("id") Long id) {
+    @RolesAllowed({ "Admin" })
+    public Response update(@PathParam("id") Long id, PagamentoDTO pagamentoDTO) {
+        LOG.infof("Atualizando um pagamento: %s", pagamentoDTO.valor(), pagamentoDTO.compra());
         Result result = null;
         try {
-            pagamentoService.delete(id);
-            LOG.infof("Pagamento (%d) apagada com sucesso.");
-            return Response.status(Status.NO_CONTENT).build();
-        } catch (NullPointerException e) {
-           LOG.error("Erro ao apagar uma cidade.");
+            PagamentoResponseDTO pagamento = pagamentoService.update(id, pagamentoDTO);
+            LOG.infof("pagamento (%d) atualizado com sucesso.", pagamento.id());
+            return Response.status(Status.NO_CONTENT).entity(pagamento).build();
+        } catch (ConstraintViolationException e) {
+            LOG.error("Erro ao atualizar um pagamento.");
             LOG.debug(e.getMessage());
-            result = new Result(e.getMessage());
-            
+            result = new Result(e.getConstraintViolations());
+        } catch (Exception e) {
+            LOG.fatal("Erro sem identificacao: " + e.getMessage());
+            result = new Result(e.getMessage(), false);
         }
         return Response.status(Status.NOT_FOUND).entity(result).build();
     }
 
+    @DELETE
+    @Path("/{id}")
+    @RolesAllowed({ "Admin" })
+    public Response delete(@PathParam("id") Long id) {
+        pagamentoService.delete(id);
+        return Response
+                .status(Status.NO_CONTENT)
+                .build();
+    }
+
+    @GET
+    @Path("/search/{id}")
+    @RolesAllowed({ "Admin" })
+    public PagamentoResponseDTO searchId(@PathParam("id") Long id) {
+        return pagamentoService.findById(id);
+    }
+
+    @GET
+    @Path("/search/{nome}")
+    @RolesAllowed({ "Admin" })
+    public List<PagamentoResponseDTO> search(@PathParam("pagamento") String nome) {
+        return pagamentoService.findByPagamentos(nome);
+    }
+
+    @GET
+    @Path("/count")
+    @RolesAllowed({ "Admin" })
+    public long count() {
+        return pagamentoService.count();
+    }
 
 }

@@ -14,4 +14,8 @@ public class CompraRepository implements PanacheRepository<Compra> {
             return null;
         return find("clienteId", clienteId).list();
     }
+
+    public List<Compra> findByNome(String nome) {
+        return null;
+    }
 }

@@ -1,5 +1,6 @@
 package br.unitins.resource;
 
+import java.io.IOException;
 import java.util.List;
 
 import jakarta.annotation.security.RolesAllowed;
@@ -8,6 +9,7 @@ import jakarta.validation.ConstraintViolationException;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.GET;
+import jakarta.ws.rs.PATCH;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.Path;
@@ -15,12 +17,18 @@ import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.Response.ResponseBuilder;
 import jakarta.ws.rs.core.Response.Status;
 import org.jboss.logging.Logger;
+import org.jboss.resteasy.annotations.providers.multipart.MultipartForm;
 
 import br.unitins.application.Result;
 import br.unitins.dto.VinhoDTO;
 import br.unitins.dto.VinhoResponseDTO;
+import br.unitins.form.ImageForm;
+import br.unitins.model.Vinho;
+import br.unitins.repository.VinhoRepository;
+import br.unitins.service.FileService;
 import br.unitins.service.VinhoService;
 
 @Path("/vinhos")
@@ -29,6 +37,13 @@ import br.unitins.service.VinhoService;
 public class VinhoResource {
     @Inject
     VinhoService vinhoService;
+
+    @Inject
+    FileService fileService;
+
+    @Inject
+    VinhoRepository vinhoRepository;
+
     private static final Logger LOG = Logger.getLogger(CidadeResource.class);
 
     @GET
@@ -118,5 +133,33 @@ public class VinhoResource {
     @Path("/search/{nome}")
     public List<VinhoResponseDTO> search(@PathParam("nome") String nome) {
         return vinhoService.findByNome(nome);
+    }
+
+    @PATCH
+    @Path("/novaimagem")
+    @RolesAllowed({ "Admin", "User" })
+    @Consumes(MediaType.MULTIPART_FORM_DATA)
+    public Response salvarImagem(@MultipartForm ImageForm form, VinhoResponseDTO dto) {
+        String nomeImagem = "";
+
+        try {
+            nomeImagem = fileService.salvarImagemUsuario(form.getImagem(), form.getNomeImagem());
+        } catch (IOException e) {
+            Result result = new Result(e.getMessage());
+            return Response.status(Status.CONFLICT).entity(result).build();
+        }
+        Vinho vinho = vinhoRepository.findById(dto.id());
+        vinho = vinhoService.alterarImagem(vinho.getId(), nomeImagem);
+        return Response.ok(vinho).build();
+    }
+
+    @GET
+    @Path("/download/{nomeImagem}")
+    @RolesAllowed({ "Admin", "User" })
+    @Produces(MediaType.APPLICATION_OCTET_STREAM)
+    public Response download(@PathParam("nomeImagem") String nomeImagem) {
+        ResponseBuilder response = Response.ok(fileService.download(nomeImagem));
+        response.header("Content-Disposition", "attachment;filename=" + nomeImagem);
+        return response.build();
     }
 }

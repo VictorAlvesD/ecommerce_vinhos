@@ -25,83 +25,73 @@ import br.unitins.repository.PagamentoRepository;
 public class PagamentoServiceImpl implements PagamentoService {
     @Inject
     PagamentoRepository pagamentoRepository;
+
     @Inject
     Validator validator;
 
     @Override
     public List<PagamentoResponseDTO> getAll() {
         List<Pagamento> list = pagamentoRepository.listAll();
-        return list.stream().map(u -> PagamentoResponseDTO.valueOf(u)).collect(Collectors.toList());
+        return list.stream().map(PagamentoResponseDTO::new).collect(Collectors.toList());
     }
 
     @Override
     public PagamentoResponseDTO findById(Long id) {
         Pagamento pagamento = pagamentoRepository.findById(id);
         if (pagamento == null)
-            throw new NotFoundException("Pagamento não encontrado!");
+            throw new NotFoundException("Pagamento não encontrado.");
         return new PagamentoResponseDTO(pagamento);
-    }
-
-    private void validarId(Pagamento pagamento) throws ConstraintViolationException {
-        if (pagamento.getId() == null)
-            throw new NullPointerException("Id inválido");
-    }
-
-    @Override
-    @Transactional
-    public PagamentoResponseDTO insert(PagamentoDTO pagamentoDTO) throws ConstraintViolationException {
-        validar(pagamentoDTO);
-
-        Pagamento entity = new Pagamento();
-        entity.setQuantidadeParcelas(pagamentoDTO.quantidadeParcelas());
-        entity.setValorParcelas(pagamentoDTO.valorParcelas());
-        entity.setStatusPagamento(StatusPagamento.valueOf(pagamentoDTO.statusPagamento()));
-        entity.setTipoPagamento(TipoPagamento.valueOf(pagamentoDTO.tipoPagamento()));
-
-        pagamentoRepository.persist(entity);
-
-        return new PagamentoResponseDTO(entity);
     }
 
     private void validar(PagamentoDTO pagamentoDTO) throws ConstraintViolationException {
         Set<ConstraintViolation<PagamentoDTO>> violations = validator.validate(pagamentoDTO);
         if (!violations.isEmpty())
             throw new ConstraintViolationException(violations);
+
     }
 
     @Override
     @Transactional
-    public PagamentoResponseDTO update(Long id, PagamentoDTO pagamentoDTO) throws ConstraintViolationException {
+    public PagamentoResponseDTO create(PagamentoDTO pagamentoDTO) throws ConstraintViolationException{
         validar(pagamentoDTO);
 
-        Pagamento entity = pagamentoRepository.findById(id);
-        validarId(entity);
-        entity.setQuantidadeParcelas(pagamentoDTO.quantidadeParcelas());
-        entity.setValorParcelas(pagamentoDTO.valorParcelas());
-        entity.setStatusPagamento(StatusPagamento.valueOf(pagamentoDTO.statusPagamento()));
-        entity.setTipoPagamento(TipoPagamento.valueOf(pagamentoDTO.tipoPagamento()));
+        Pagamento entity = new Pagamento();
+        entity.setValor(pagamentoDTO.valor());
+        entity.setCompra(pagamentoDTO.compra());
 
         pagamentoRepository.persist(entity);
-
         return new PagamentoResponseDTO(entity);
     }
 
     @Override
     @Transactional
+    public PagamentoResponseDTO update(Long id, PagamentoDTO pagamentoDTO) throws ConstraintViolationException{
+        Pagamento pagamentoUpdate = pagamentoRepository.findById(id);
+        if (pagamentoUpdate == null)
+            throw new NotFoundException("Pagamento não encontrado.");
+        validar(pagamentoDTO);
+
+        pagamentoUpdate.setValor(pagamentoDTO.valor());
+        pagamentoUpdate.setCompra(pagamentoDTO.compra());
+
+        pagamentoRepository.persist(pagamentoUpdate);
+        return new PagamentoResponseDTO(pagamentoUpdate);
+    }
+
+    @Override
+    @Transactional
     public void delete(Long id) {
-        validarId(pagamentoRepository.findById(id));
         pagamentoRepository.deleteById(id);
     }
 
     @Override
-    public CompraResponseDTO insert(CompraDTO dto) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'insert'");
+    public List<PagamentoResponseDTO> findByPagamentos(String nome) {
+        List<Pagamento> list = pagamentoRepository.findByPagamentos(nome);
+        return list.stream().map(PagamentoResponseDTO::new).collect(Collectors.toList());
     }
 
     @Override
-    public CompraResponseDTO update(Long id, CompraDTO dto) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'update'");
+    public long count() {
+        return pagamentoRepository.count();
     }
 }

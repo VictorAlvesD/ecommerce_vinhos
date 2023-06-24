@@ -57,12 +57,12 @@ public class UsuarioResource {
     }
 
     @PUT
-    @Path("/{id}")
+    @Path("/{idUpdate}")
     @RolesAllowed({ "Admin" })
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @Transactional
-    public Response update(@PathParam("id") Long id, UsuarioDTO dto) {
+    public Response update(@PathParam("idUpdate") Long id, UsuarioDTO dto) {
         LOG.infof("Atualiza um cliente: %s", dto.getClass());
         Result result = null;
         try {

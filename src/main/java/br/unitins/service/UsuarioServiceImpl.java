@@ -81,7 +81,7 @@ public class UsuarioServiceImpl implements UsuarioService {
             perfis.add(perfil);
         }
         entity.setPerfis(perfis);
-
+        
         Telefone telefone = telefoneRepository.findById(usuarioDTO.telefone());
         entity.setTelefone(telefone);
 

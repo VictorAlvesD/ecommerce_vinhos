@@ -1,27 +1,17 @@
 package br.unitins.dto;
 
-import java.util.List;
+import java.time.LocalDate;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import br.unitins.model.Compra;
-import br.unitins.model.StatusPagamento;
+import br.unitins.model.Usuario;
 
 public record CompraResponseDTO(
-        ItemCompraResponseDTO itemCompra,
-        PagamentoResponseDTO pagamento,
-        StatusPagamento statusPagamento) {
-    
-    public static CompraResponseDTO valueOf(Compra compra) {
-        if (compra == null)
-            return null;
-
-        ItemCompraResponseDTO itemCompra = ItemCompraResponseDTO.valueOf(compra.getItens());
-        PagamentoResponseDTO pagamento = PagamentoResponseDTO.valueOf(compra.getPagamento());
-
-        return new CompraResponseDTO(itemCompra, pagamento, compra.getStatus());
-    }
-
-    public Object id() {
-        return null;
+    Long id,
+    LocalDate data,
+    Double totalCompra,
+    Usuario usuario
+){
+    public CompraResponseDTO(Compra compra){
+        this(compra.getId(), compra.getData(), compra.getTotalCompra(), compra.getUsuario());
     }
 }

@@ -80,4 +80,6 @@ public class UsuarioLogadoResource {
         response.header("Content-Disposition", "attachment;filename=" + nomeImagem);
         return response.build();
     }
+
+    
 }
